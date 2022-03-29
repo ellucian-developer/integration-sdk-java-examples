@@ -162,12 +162,14 @@ public class BPAPIBanExamples extends ExamplesBase {
             System.out.println( "Making POST request to add a new person comment for person with ID: " + personId + ", using contact date: " + personCommentNode.get("contactDate") );
             resourceName = "person-comments";
             ethosResponse = ethosFilterQueryClient.post( resourceName, personCommentNode );
+            System.out.println( "POST made using this URL: " + ethosResponse.getRequestedUrl() );
             System.out.println( "POST EthosResponse body: " + ethosResponse.getContent() );
 
             // Change the contact date on the personCommentNode so that we can make a PUT request to update it.  Adds a day to the date.
             personCommentNode.put( "contactDate", rightNow.plus(1, ChronoUnit.DAYS).toString() );
             System.out.println( "Making PUT request with updated contact date: " + personCommentNode.get("contactDate") );
             ethosResponse = ethosFilterQueryClient.put( resourceName, personCommentNode );
+            System.out.println( "PUT made using this URL: " + ethosResponse.getRequestedUrl() );
             System.out.println( "PUT EthosResponse body: " + ethosResponse.getContent() );
 
         }
