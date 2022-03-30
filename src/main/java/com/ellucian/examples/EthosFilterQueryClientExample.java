@@ -75,6 +75,8 @@ public class EthosFilterQueryClientExample {
         ethosFilterQueryClientExample.getPagesFromOffsetUsingFilterMapValuesAsJavaBeans();
         ethosFilterQueryClientExample.getAccountCodesWithCriteriaFilter();
         ethosFilterQueryClientExample.getAccountCodesWithCriteriaFilterAsJavaBeans();
+        ethosFilterQueryClientExample.applyPersonCommentsUsingJsonNodes();
+        ethosFilterQueryClientExample.applyPersonCommentsUsingJavaBeans();
     }
 
     /**
@@ -860,6 +862,7 @@ public class EthosFilterQueryClientExample {
 
             // Make a POST request to add a new person comment using a JavaBean request body object.
             System.out.println( "Making POST request to add a new person comment for person with ID: " + personId + ", using contact date: " + personCommentNode.get("contactDate") );
+            // Reset the resource name for the resource we are POSTing and PUTting to.
             resourceName = "person-comments";
             ethosResponse = ethosFilterQueryClient.post( resourceName, personCommentNode );
             System.out.println( "POST EthosResponse body: " + ethosResponse.getContent() );
@@ -923,6 +926,8 @@ public class EthosFilterQueryClientExample {
                     .withTextNar("comment through Java SDK")
                     .withContactDate(today)
                     .withDate(today);
+
+            // Reset the resource name for the resource we are POSTing and PUTting to.
             resourceName = "person-comments";
             // Make a POST request to add a new person comment using a JavaBean request body object.
             System.out.println( "Making POST request to add a new person comment for person with ID: " + personId + ", using contact date: " + personCommentRequest.getContactDate() );

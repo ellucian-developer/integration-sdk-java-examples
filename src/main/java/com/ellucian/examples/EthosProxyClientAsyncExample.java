@@ -178,16 +178,16 @@ public class EthosProxyClientAsyncExample {
      * EthosProxyClientAsync from some offset value.
      */
     public void doGetAllPagesFromOffsetAsStringsAsyncExample() {
-        EthosProxyClientAsync ethosProxyClient = getEthosProxyClientAsync();
+        EthosProxyClientAsync ethosProxyClientAsync = getEthosProxyClientAsync();
         try {
             System.out.println( "******* doGetAllPagesFromOffsetAsStringsAsyncExample() *******" );
             String resourceName = "student-cohorts";
-            int totalCount = ethosProxyClient.getTotalCount( resourceName );
+            int totalCount = ethosProxyClientAsync.getTotalCount( resourceName );
             // Calculate the offset to be 95% of the totalCount to avoid paging through potentially tons of pages.
             int offset = (int)(totalCount * 0.95);
             ObjectMapper objectMapper = new ObjectMapper();
 
-            CompletableFuture<List<String>> asyncResponse = ethosProxyClient.getAllPagesFromOffsetAsStringsAsync(resourceName, offset);
+            CompletableFuture<List<String>> asyncResponse = ethosProxyClientAsync.getAllPagesFromOffsetAsStringsAsync(resourceName, offset);
 
             // While the CompletableFuture thread is running, additional operations can be performed.  For the sake of
             // demonstrating this we are just running a few printlns to print out the current time.
@@ -228,7 +228,7 @@ public class EthosProxyClientAsyncExample {
      * but altogether the number of rows requested are the number returned.
      */
     public void doGetRowsFromOffsetAsyncExample() {
-        EthosProxyClientAsync ethosProxyClient = getEthosProxyClientAsync();
+        EthosProxyClientAsync ethosProxyClientAsync = getEthosProxyClientAsync();
         try {
             System.out.println( "******* doGetRowsFromOffsetExample() *******" );
             String resourceName = "student-cohorts";
@@ -241,7 +241,7 @@ public class EthosProxyClientAsyncExample {
             // The List<JsonNode> returned by the getRowsFromOffsetAsJsonNodesAsync() method is row-based, not page-based,
             // meaning that the returned list contains all of the rows requested rather than pages of rows.
             CompletableFuture<List<JsonNode>> asyncResponse =
-                    ethosProxyClient.getRowsFromOffsetAsJsonNodesAsync( resourceName, version, pageSize, offset, numRows );
+                    ethosProxyClientAsync.getRowsFromOffsetAsJsonNodesAsync( resourceName, version, pageSize, offset, numRows );
 
             // While the CompletableFuture thread is running, additional operations can be performed.  For the sake of
             // demonstrating this we are just running a few printlns to print out the current time.
@@ -276,7 +276,7 @@ public class EthosProxyClientAsyncExample {
      * but altogether the number of rows requested are the number returned.
      */
     public void doGetRowsFromOffsetAsJavaBeansAsyncExample() {
-        EthosProxyClientAsync ethosProxyClient = getEthosProxyClientAsync();
+        EthosProxyClientAsync ethosProxyClientAsync = getEthosProxyClientAsync();
         try {
             System.out.println( "******* doGetRowsFromOffsetAsJavaBeansAsyncExample() *******" );
             String resourceName = "student-cohorts";
@@ -290,7 +290,7 @@ public class EthosProxyClientAsyncExample {
 
             // The List<JsonNode> returned by the getRowsFromOffsetAsJsonNodesAsync() method is row-based, not page-based,
             // meaning that the returned list contains all of the rows requested rather than pages of rows.
-            CompletableFuture<List<EthosResponse<List<StudentCohorts>>>> asyncResponse = ethosProxyClient.getRowsFromOffsetAsync( resourceName, version, pageSize, offset, numRows, StudentCohorts.class );
+            CompletableFuture<List<EthosResponse<List<StudentCohorts>>>> asyncResponse = ethosProxyClientAsync.getRowsFromOffsetAsync( resourceName, version, pageSize, offset, numRows, StudentCohorts.class );
 
             // While the CompletableFuture thread is running, additional operations can be performed.  For the sake of
             // demonstrating this we are just running a few printlns to print out the current time.
