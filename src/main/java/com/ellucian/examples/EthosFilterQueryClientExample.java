@@ -13,8 +13,11 @@ import com.ellucian.ethos.integration.client.proxy.filter.CriteriaFilter;
 import com.ellucian.ethos.integration.client.proxy.filter.FilterMap;
 import com.ellucian.ethos.integration.client.proxy.filter.NamedQueryFilter;
 import com.ellucian.ethos.integration.client.proxy.filter.SimpleCriteria;
+import com.ellucian.generated.bpapi.ban.account_codes.v1_0_0.AccountCodes100GetResponse;
 import com.ellucian.generated.bpapi.ban.person_comments.v1_0_0.PersonComments100PostRequest;
 import com.ellucian.generated.bpapi.ban.person_search.v1_0_0.PersonSearch100GetResponse;
+import com.ellucian.generated.eedm.persons.v12_4_0.Persons;
+import com.ellucian.generated.eedm.sections.v16_1_0.Sections;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -53,15 +56,25 @@ public class EthosFilterQueryClientExample {
         EthosFilterQueryClientExample ethosFilterQueryClientExample = new EthosFilterQueryClientExample( apiKey );
         ethosFilterQueryClientExample.getUsingCriteriaFilterString();
         ethosFilterQueryClientExample.getUsingCriteriaFilter();
+        ethosFilterQueryClientExample.getUsingCriteriaFilterWithJavaBeans();
         ethosFilterQueryClientExample.getUsingNamedQueryFilter();
-        ethosFilterQueryClientExample.getWithSimpleCriteriaArrayFilter();
+        ethosFilterQueryClientExample.getUsingNamedQueryFilterWithJavaBeans();
+        ethosFilterQueryClientExample.getWithSimpleCriteriaArrayValues();
+        ethosFilterQueryClientExample.getWithSimpleCriteriaArrayValuesAsJavaBeans();
         ethosFilterQueryClientExample.getUsingFilterMap();
+        ethosFilterQueryClientExample.getUsingFilterMapAsJavaBeans();
         ethosFilterQueryClientExample.getPagesUsingCriteriaFilter();
+        ethosFilterQueryClientExample.getPagesUsingCriteriaFilterAsJavaBeans();
         ethosFilterQueryClientExample.getPagesFromOffsetUsingCriteriaFilter();
+        ethosFilterQueryClientExample.getPagesFromOffsetUsingCriteriaFilterAsJavaBeans();
         ethosFilterQueryClientExample.getPagesUsingNamedQueryFilter();
+        ethosFilterQueryClientExample.getPagesUsingNamedQueryFilterAsJavaBeans();
         ethosFilterQueryClientExample.getPagesUsingFilterMapValues();
+        ethosFilterQueryClientExample.getPagesUsingFilterMapValuesAsJavaBeans();
         ethosFilterQueryClientExample.getPagesFromOffsetUsingFilterMapValues();
+        ethosFilterQueryClientExample.getPagesFromOffsetUsingFilterMapValuesAsJavaBeans();
         ethosFilterQueryClientExample.getAccountCodesWithCriteriaFilter();
+        ethosFilterQueryClientExample.getAccountCodesWithCriteriaFilterAsJavaBeans();
     }
 
     /**
@@ -90,30 +103,8 @@ public class EthosFilterQueryClientExample {
             System.out.println( "REQUESTED URL: " + ethosResponse.getRequestedUrl() );
             System.out.println( "Number of resources returned: " + ethosResponse.getContentAsJson().size() );
             // Printing out the response JSON string, but the response body can be handled using the Jackson JsonNode library.
-            System.out.println( ethosResponse.getContentAsJson().toPrettyString() );
-        }
-        catch( IOException ioe ) {
-            ioe.printStackTrace();
-        }
-    }
-
-    /**
-     * This example shows how to submit a GET request using values that form a simple criteria array to make the request.
-     */
-    public void getWithSimpleCriteriaArrayFilter() {
-        System.out.println( "******* getWithSimpleCriteriaArrayFilter() using values *******" );
-        String resource = "persons";
-        String criteriaLabel = "names";
-        String criteriaKey = "firstName";
-        String criteriaValue = "John";
-        EthosFilterQueryClient ethosFilterQueryClient = getEthosFilterQueryClient();
-        try {
-            // Just pass in the criteria label, key, and value using this method...the SDK does the rest of the work to make the request.
-            EthosResponse ethosResponse = ethosFilterQueryClient.getWithSimpleCriteriaArrayValues( resource, criteriaLabel, criteriaKey, criteriaValue );
-            System.out.println( "REQUESTED URL: " + ethosResponse.getRequestedUrl() );
-            System.out.println( "Number of resources returned: " + ethosResponse.getContentAsJson().size() );
-            // Printing out the response JSON string, but the response body can be handled using the Jackson JsonNode library.
-            System.out.println( ethosResponse.getContentAsJson().toPrettyString() );
+            JsonNode jsonNode = ethosResponse.getContentAsJson();
+            System.out.println( jsonNode.toPrettyString() );
         }
         catch( IOException ioe ) {
             ioe.printStackTrace();
@@ -129,15 +120,46 @@ public class EthosFilterQueryClientExample {
         String resource = "persons";
         // Build a SimpleCriteriaArray filter because the persons resource supports that filter syntax.
         CriteriaFilter criteriaFilter = new SimpleCriteria.Builder()
-                                        .withSimpleCriteriaArray("names", "firstName", "John")
-                                        .buildCriteriaFilter();
+                .withSimpleCriteriaArray("names", "firstName", "John")
+                .buildCriteriaFilter();
         EthosFilterQueryClient ethosFilterQueryClient = getEthosFilterQueryClient();
         try {
             EthosResponse ethosResponse = ethosFilterQueryClient.getWithCriteriaFilter( resource, criteriaFilter );
             System.out.println( "REQUESTED URL: " + ethosResponse.getRequestedUrl() );
             System.out.println( "Number of resources returned: " + ethosResponse.getContentAsJson().size() );
             // Printing out the response JSON string, but the response body can be handled using the Jackson JsonNode library.
-            System.out.println( ethosResponse.getContentAsJson().toPrettyString() );
+            JsonNode jsonNode = ethosResponse.getContentAsJson();
+            System.out.println( jsonNode.toPrettyString() );
+        }
+        catch( IOException ioe ) {
+            ioe.printStackTrace();
+        }
+    }
+
+    /**
+     * This example shows how to build a CriteriaFilter to make a criteria filter GET request.
+     * How the filter GET request is made depends on the resource requested.
+     * The response body within the returned EthosResponse is a list of JavaBeans for easier property access.
+     */
+    public void getUsingCriteriaFilterWithJavaBeans() {
+        System.out.println( "******* getUsingCriteriaFilterWithJavaBeans() using CriteriaFilter *******" );
+        String resource = "persons";
+        // Build a SimpleCriteriaArray filter because the persons resource supports that filter syntax.
+        CriteriaFilter criteriaFilter = new SimpleCriteria.Builder()
+                .withSimpleCriteriaArray("names", "firstName", "John")
+                .buildCriteriaFilter();
+        EthosFilterQueryClient ethosFilterQueryClient = getEthosFilterQueryClient();
+        try {
+            // Use the criteriaFilter to get a page of data for Persons specifying the Persons.class JavaBean type for easier response body handling.
+            EthosResponse<List<Persons>> ethosResponse = ethosFilterQueryClient.getWithCriteriaFilter( resource, criteriaFilter, Persons.class );
+            // Get the response body content from the ethosResponse as a list of Persons JavaBeans.
+            List<Persons> personsList = ethosResponse.getContentAsType();
+            System.out.println( "REQUESTED URL: " + ethosResponse.getRequestedUrl() );
+            System.out.println( "Number of resources returned: " + personsList.size() );
+            for( Persons persons : personsList ) {
+                // We can use the getter methods on the persons object for easier property access, but just print out toString() here.
+                System.out.println( "PERSON: " + persons.toString() );
+            }
         }
         catch( IOException ioe ) {
             ioe.printStackTrace();
@@ -162,7 +184,92 @@ public class EthosFilterQueryClientExample {
             System.out.println( "REQUESTED URL: " + ethosResponse.getRequestedUrl() );
             System.out.println( "Number of resources returned: " + ethosResponse.getContentAsJson().size() );
             // Printing out the response JSON string, but the response body can be handled using the Jackson JsonNode library.
-            System.out.println( ethosResponse.getContentAsJson().toPrettyString() );
+            JsonNode jsonNode = ethosResponse.getContentAsJson();
+            System.out.println( jsonNode.toPrettyString() );
+        }
+        catch( IOException ioe ) {
+            ioe.printStackTrace();
+        }
+    }
+
+    /**
+     * This example shows how to build a NamedQueryFilter to make a GET request for a resource that supports named queries.
+     * The response body within the returned EthosResponse is a list of JavaBeans for easier property access.
+     */
+    public void getUsingNamedQueryFilterWithJavaBeans() {
+        System.out.println( "******* getUsingNamedQueryFilterWithJavaBeans() using NamedQueryFilter *******" );
+        String resource = "sections";
+        String queryName = "keywordSearch";
+        String queryKey = "keywordSearch";
+        String queryValue = "Culture";
+        NamedQueryFilter namedQueryFilter = new SimpleCriteria.Builder()
+                .withNamedQuery( queryName, queryKey, queryValue)
+                .buildNamedQueryFilter();
+        EthosFilterQueryClient ethosFilterQueryClient = getEthosFilterQueryClient();
+        try {
+            // Use the namedQueryFilter to get a page of data for Sections specifying the Sections.class JavaBean type for easier response body handling.
+            EthosResponse<List<Sections>> ethosResponse = ethosFilterQueryClient.getWithNamedQueryFilter( resource, namedQueryFilter, Sections.class );
+            // Get the response body content from the ethosResponse as a list of Sections JavaBeans.
+            List<Sections> sectionsList = ethosResponse.getContentAsType();
+            System.out.println( "REQUESTED URL: " + ethosResponse.getRequestedUrl() );
+            System.out.println( "Number of resources returned: " + sectionsList.size() );
+            for( Sections sections : sectionsList ) {
+                // We can use the getter methods on the sections object for easier property access, but just print out toString() here.
+                System.out.println( "SECTION: " + sections.toString() );
+            }
+        }
+        catch( IOException ioe ) {
+            ioe.printStackTrace();
+        }
+    }
+
+    /**
+     * This example shows how to submit a GET request using values that form a simple criteria array to make the request.
+     */
+    public void getWithSimpleCriteriaArrayValues() {
+        System.out.println( "******* getWithSimpleCriteriaArrayValues() using values *******" );
+        String resource = "persons";
+        String criteriaLabel = "names";
+        String criteriaKey = "firstName";
+        String criteriaValue = "John";
+        EthosFilterQueryClient ethosFilterQueryClient = getEthosFilterQueryClient();
+        try {
+            // Just pass in the criteria label, key, and value using this method...the SDK does the rest of the work to make the request.
+            EthosResponse ethosResponse = ethosFilterQueryClient.getWithSimpleCriteriaArrayValues( resource, criteriaLabel, criteriaKey, criteriaValue );
+            System.out.println( "REQUESTED URL: " + ethosResponse.getRequestedUrl() );
+            System.out.println( "Number of resources returned: " + ethosResponse.getContentAsJson().size() );
+            // Printing out the response JSON string, but the response body can be handled using the Jackson JsonNode library.
+            JsonNode jsonNode = ethosResponse.getContentAsJson();
+            System.out.println( jsonNode.toPrettyString() );
+        }
+        catch( IOException ioe ) {
+            ioe.printStackTrace();
+        }
+    }
+
+    /**
+     * This example shows how to submit a GET request using values that form a simple criteria array to make the request.
+     * The response body within the returned EthosResponse is a list of JavaBeans for easier property access.
+     */
+    public void getWithSimpleCriteriaArrayValuesAsJavaBeans() {
+        System.out.println( "******* getWithSimpleCriteriaArrayValuesAsJavaBeans() using values *******" );
+        String resource = "persons";
+        String criteriaLabel = "names";
+        String criteriaKey = "firstName";
+        String criteriaValue = "John";
+        EthosFilterQueryClient ethosFilterQueryClient = getEthosFilterQueryClient();
+        try {
+            // Just pass in the criteria label, key, and value using this method...the SDK does the rest of the work to make the request.
+            // Specify the Persons.class JavaBean type for easier response body handling.
+            EthosResponse<List<Persons>> ethosResponse = ethosFilterQueryClient.getWithSimpleCriteriaArrayValues( resource, criteriaLabel, criteriaKey, criteriaValue, Persons.class );
+            // Get the response body content from the ethosResponse as a list of Sections JavaBeans.
+            List<Persons> personsList = ethosResponse.getContentAsType();
+            System.out.println( "REQUESTED URL: " + ethosResponse.getRequestedUrl() );
+            System.out.println( "Number of resources returned: " + personsList.size() );
+            for( Persons persons : personsList ) {
+                // We can use the getter methods on the persons object for easier property access, but just print out toString() here.
+                System.out.println( "PERSON: " + persons.toString() );
+            }
         }
         catch( IOException ioe ) {
             ioe.printStackTrace();
@@ -188,7 +295,40 @@ public class EthosFilterQueryClientExample {
             System.out.println( "REQUESTED URL: " + ethosResponse.getRequestedUrl() );
             System.out.println( "Number of resources returned: " + ethosResponse.getContentAsJson().size() );
             // Printing out the response JSON string, but the response body can be handled using the Jackson JsonNode library.
-            System.out.println( ethosResponse.getContentAsJson().toPrettyString() );
+            JsonNode jsonNode = ethosResponse.getContentAsJson();
+            System.out.println( jsonNode.toPrettyString() );
+        }
+        catch( IOException ioe ) {
+            ioe.printStackTrace();
+        }
+    }
+
+    /**
+     * This example shows how to use a filter map containing key/value pairs to make a GET request.
+     * The response body within the returned EthosResponse is a list of JavaBeans for easier property access.
+     */
+    public void getUsingFilterMapAsJavaBeans() {
+        System.out.println( "******* getUsingFilterMapAsJavaBeans() using filterMap *******" );
+        String resource = "persons";
+        String version = "application/vnd.hedtech.integration.v6+json";
+        String filterKey = "firstName";
+        String filterValue = "John";
+        EthosFilterQueryClient ethosFilterQueryClient = getEthosFilterQueryClient();
+        try {
+            FilterMap filterMap = new FilterMap.Builder()
+                    .withParameterPair(filterKey, filterValue)
+                    .withParameterPair("lastName", "Smith")
+                    .build();
+            // Specify the v6 in this example of the Persons.class JavaBean type from the version header value listed above for easy response body handling.
+            EthosResponse<List<com.ellucian.generated.eedm.persons.v6_0.Persons>> ethosResponse = ethosFilterQueryClient.getWithFilterMap( resource, version, filterMap, com.ellucian.generated.eedm.persons.v6_0.Persons.class );
+            // Get the response body content from the ethosResponse as a list of Sections JavaBeans.
+            List<com.ellucian.generated.eedm.persons.v6_0.Persons> personsList = ethosResponse.getContentAsType();
+            System.out.println( "REQUESTED URL: " + ethosResponse.getRequestedUrl() );
+            System.out.println( "Number of resources returned: " + personsList.size() );
+            for( com.ellucian.generated.eedm.persons.v6_0.Persons persons : personsList ) {
+                // We can use the getter methods on the persons object for easier property access, but just print out toString() here.
+                System.out.println( "PERSON: " + persons.toString() );
+            }
         }
         catch( IOException ioe ) {
             ioe.printStackTrace();
@@ -220,7 +360,49 @@ public class EthosFilterQueryClientExample {
             for( EthosResponse ethosResponse : ethosResponseList ) {
                 System.out.println( "REQUESTED URL: " + ethosResponse.getRequestedUrl() );
                 // Printing out the response JSON string, but the response body can be handled using the Jackson JsonNode library.
-                System.out.println( "PAGE SIZE: " + ethosResponse.getContentAsJson().size() );
+                JsonNode jsonNode = ethosResponse.getContentAsJson();
+                System.out.println( "PAGE SIZE: " + jsonNode.size() );
+                System.out.println( jsonNode.toString() );
+            }
+        }
+        catch( IOException ioe ) {
+            ioe.printStackTrace();
+        }
+    }
+
+    /**
+     * This example shows how criteria filter requests also support paging when multiple pages are returned.
+     * This uses a criteria filter on a GET request returning a list of EthosResponses where each EthosResponse
+     * represents one page of data and contains a list of JavaBeans as the response body for easier property access.
+     * This example shows how to retrieve ALL the pages from a criteria filter GET request.
+     * NOTE:  IT MAY NOT BE ADVISABLE TO RUN THIS EXAMPLE BECAUSE THE QUANTITY OF DATA RETURNED COULD BE A LOT,
+     * DEPENDING ON THE ENVIRONMENT THIS IS RUN AGAINST SINCE IT RETURNS ALL PAGES ACCORDING TO THE FILTER APPLIED.
+     */
+    public void getPagesUsingCriteriaFilterAsJavaBeans() {
+        System.out.println( "******* getPagesUsingCriteriaFilterAsJavaBeans() using criteria filter *******" );
+        String resource = "persons";
+        String criteriaLabel = "names";
+        String criteriaKey = "firstName";
+        String criteriaValue = "John";
+        int pageSize = 50;
+        EthosFilterQueryClient ethosFilterQueryClient = getEthosFilterQueryClient();
+        try {
+            CriteriaFilter criteriaFilter = new SimpleCriteria.Builder()
+                    .withSimpleCriteriaArray(criteriaLabel, criteriaKey, criteriaValue)
+                    .buildCriteriaFilter();
+            List<EthosResponse<List<Persons>>> ethosResponseList = ethosFilterQueryClient.getPagesWithCriteriaFilter( resource, criteriaFilter, pageSize, Persons.class );
+            System.out.println( "Number of pages returned: " + ethosResponseList.size() );
+            // Each EthosResponse in the list represents a page of data.  So iterate through the ethosResponseList for each page.
+            for( EthosResponse<List<Persons>> ethosResponse : ethosResponseList ) {
+                // The response body in each ethosResponse is a list of Persons JavaBean objects.  So get that list.
+                List<Persons> personsList = ethosResponse.getContentAsType();
+                System.out.println( "PAGE SIZE: " + personsList.size() );
+                // Iterate through the personsList for each person row.
+                for( Persons persons : personsList ) {
+                    // We can use the getter methods on the persons object for easier property access, but just print out toString() here.
+                    System.out.println( "PERSON: " + persons.toString() );
+                }
+                System.out.println( "REQUESTED URL: " + ethosResponse.getRequestedUrl() );
             }
         }
         catch( IOException ioe ) {
@@ -259,7 +441,56 @@ public class EthosFilterQueryClientExample {
             for( EthosResponse ethosResponse : ethosResponseList ) {
                 System.out.println( "REQUESTED URL: " + ethosResponse.getRequestedUrl() );
                 // Printing out the response JSON string, but the response body can be handled using the Jackson JsonNode library.
-                System.out.println( "PAGE SIZE: " + ethosResponse.getContentAsJson().size() );
+                JsonNode jsonNode = ethosResponse.getContentAsJson();
+                System.out.println( "PAGE SIZE: " + jsonNode.size() );
+                System.out.println( jsonNode.toString() );
+            }
+        }
+        catch( IOException ioe ) {
+            ioe.printStackTrace();
+        }
+    }
+
+    /**
+     * This example shows how criteria filter requests also support paging when multiple pages are returned.
+     * This uses a criteria filter on a GET request returning a list of EthosResponses where each EthosResponse
+     * represents one page of data and contains a list of JavaBeans as the response body for easier property access.
+     * In this example, a calculation is done to retrieve only the last 5% of rows due to the potential for paging across
+     * many rows of data.
+     */
+    public void getPagesFromOffsetUsingCriteriaFilterAsJavaBeans() {
+        System.out.println( "******* getPagesFromOffsetUsingCriteriaFilterAsJavaBeans() using criteria filter *******" );
+        String resourceName = "persons";
+        String criteriaLabel = "names";
+        String criteriaKey = "firstName";
+        String criteriaValue = "John";
+        int pageSize = 50;
+        EthosFilterQueryClient ethosFilterQueryClient = getEthosFilterQueryClient();
+        try {
+            CriteriaFilter criteriaFilter = new SimpleCriteria.Builder()
+                    .withSimpleCriteriaArray(criteriaLabel, criteriaKey, criteriaValue)
+                    .buildCriteriaFilter();
+            int totalCount = ethosFilterQueryClient.getTotalCount( resourceName, criteriaFilter );
+            // Calculate the offset to be 95% of the totalCount to avoid paging through potentially tons of pages.
+            int offset = (int)(totalCount * 0.95);
+            // Make the request using the criteriaFilter and other params.
+            List<EthosResponse<List<Persons>>> ethosResponseList = ethosFilterQueryClient.getPagesFromOffsetWithCriteriaFilter( resourceName, criteriaFilter, pageSize, offset, Persons.class );
+            System.out.println(String.format("Get data for resource: %s", resourceName));
+            System.out.println(String.format("Calculated offset of %s which is 95 percent of a total count of %s to avoid paging through potentially lots of pages.", offset, totalCount));
+            System.out.println("To run with more paging, manually set the offset to a lower value, or reduce the percentage of the total count.");
+            System.out.println( "Number of pages returned: " + ethosResponseList.size() );
+            System.out.println( "OFFSET: " + offset );
+            // Each EthosResponse in the list represents a page of data.  So iterate through the ethosResponseList for each page.
+            for( EthosResponse<List<Persons>> ethosResponse : ethosResponseList ) {
+                // The response body in each ethosResponse is a list of Persons JavaBean objects.  So get that list.
+                List<Persons> personsList = ethosResponse.getContentAsType();
+                System.out.println( "PAGE SIZE: " + personsList.size() );
+                // Iterate through the personsList for each person row.
+                for( Persons persons : personsList ) {
+                    // We can use the getter methods on the persons object for easier property access, but just print out toString() here.
+                    System.out.println( "PERSON: " + persons.toString() );
+                }
+                System.out.println( "REQUESTED URL: " + ethosResponse.getRequestedUrl() );
             }
         }
         catch( IOException ioe ) {
@@ -298,7 +529,56 @@ public class EthosFilterQueryClientExample {
             for( EthosResponse ethosResponse : ethosResponseList ) {
                 System.out.println( "REQUESTED URL: " + ethosResponse.getRequestedUrl() );
                 // Printing out the response JSON string, but the response body can be handled using the Jackson JsonNode library.
-                System.out.println( "PAGE SIZE: " + ethosResponse.getContentAsJson().size() );
+                JsonNode jsonNode = ethosResponse.getContentAsJson();
+                System.out.println( "PAGE SIZE: " + jsonNode.size() );
+                System.out.println( jsonNode.toString() );
+            }
+        }
+        catch( IOException ioe ) {
+            ioe.printStackTrace();
+        }
+    }
+
+    /**
+     * This example shows how named-query requests also support paging when multiple pages are returned.
+     * This uses a named-query on a GET request returning a list of EthosResponses where each EthosResponse
+     * represents one page of data and contains a list of JavaBeans as the response body for easier property access.
+     * In this example, a calculation is done to retrieve only the last 5% of rows due to
+     * the potential for paging across many rows of data.
+     */
+    public void getPagesUsingNamedQueryFilterAsJavaBeans() {
+        System.out.println( "******* getPagesUsingNamedQueryFilterAsJavaBeans() using named query filter *******" );
+        String resourceName = "sections";
+        String queryName = "keywordSearch";
+        String queryKey = "keywordSearch";
+        String queryValue = "Culture";
+        int pageSize = 50;
+        EthosFilterQueryClient ethosFilterQueryClient = getEthosFilterQueryClient();
+        try {
+            NamedQueryFilter namedQueryFilter = new SimpleCriteria.Builder()
+                    .withNamedQuery( queryName, queryKey, queryValue)
+                    .buildNamedQueryFilter();
+            int totalCount = ethosFilterQueryClient.getTotalCount( resourceName, namedQueryFilter );
+            // Calculate the offset to be 95% of the totalCount to avoid paging through potentially tons of pages.
+            int offset = (int)(totalCount * 0.95);
+            // Make the request using the namedQueryFilter and other params.
+            List<EthosResponse<List<Sections>>> ethosResponseList = ethosFilterQueryClient.getPagesFromOffsetWithNamedQueryFilter( resourceName, namedQueryFilter, pageSize, offset, Sections.class );
+            System.out.println(String.format("Get data for resource: %s", resourceName));
+            System.out.println(String.format("Calculated offset of %s which is 95 percent of a total count of %s to avoid paging through potentially lots of pages.", offset, totalCount));
+            System.out.println("To run with more paging, manually set the offset to a lower value, or reduce the percentage of the total count.");
+            System.out.println( "Number of pages returned: " + ethosResponseList.size() );
+            System.out.println( "OFFSET: " + offset );
+            // Each EthosResponse in the list represents a page of data.  So iterate through the ethosResponseList for each page.
+            for( EthosResponse<List<Sections>> ethosResponse : ethosResponseList ) {
+                // The response body in each ethosResponse is a list of Sections JavaBean objects.  So get that list.
+                List<Sections> sectionsList = ethosResponse.getContentAsType();
+                System.out.println( "PAGE SIZE: " + sectionsList.size() );
+                // Iterate through the sectionsList for each section row.
+                for( Sections sections : sectionsList ) {
+                    // We can use the getter methods on the sections object for easier property access, but just print out toString() here.
+                    System.out.println( "SECTION: " + sections.toString() );
+                }
+                System.out.println( "REQUESTED URL: " + ethosResponse.getRequestedUrl() );
             }
         }
         catch( IOException ioe ) {
@@ -327,7 +607,50 @@ public class EthosFilterQueryClientExample {
             System.out.println( "Number of pages returned: " + ethosResponseList.size() );
             for( EthosResponse ethosResponse : ethosResponseList ) {
                 System.out.println( "REQUESTED URL: " + ethosResponse.getRequestedUrl() );
-                System.out.println( "PAGE SIZE: " + ethosResponse.getContentAsJson().size() );
+                // Printing out the response JSON string, but the response body can be handled using the Jackson JsonNode library.
+                JsonNode jsonNode = ethosResponse.getContentAsJson();
+                System.out.println( "PAGE SIZE: " + jsonNode.size() );
+                System.out.println( jsonNode.toString() );
+            }
+        }
+        catch( IOException ioe ) {
+            ioe.printStackTrace();
+        }
+    }
+
+    /**
+     * This example shows how to retrieve ALL the pages from a filter map GET request.
+     * This uses a FilterMap on a GET request returning a list of EthosResponses where each EthosResponse
+     * represents one page of data and contains a list of JavaBeans as the response body for easier property access.
+     * NOTE:  IT MAY NOT BE ADVISABLE TO RUN THIS EXAMPLE BECAUSE THE QUANTITY OF DATA RETURNED COULD BE A LOT,
+     * DEPENDING ON THE ENVIRONMENT THIS IS RUN AGAINST SINCE IT RETURNS ALL PAGES ACCORDING TO THE FILTER APPLIED.
+     */
+    public void getPagesUsingFilterMapValuesAsJavaBeans() {
+        System.out.println( "******* getPagesUsingFilterMapValuesAsJavaBeans() *******" );
+        String resource = "persons";
+        String version = "application/vnd.hedtech.integration.v6+json";
+        String filterMapKey = "firstName";
+        String filterMapValue = "John";
+        int pageSize = 50;
+        EthosFilterQueryClient ethosFilterQueryClient = getEthosFilterQueryClient();
+        try {
+            FilterMap filterMap = new FilterMap.Builder()
+                    .withParameterPair(filterMapKey, filterMapValue)
+                    .build();
+            // Specifying v6 of the Persons JavaBean to make the request with per the version header value above.
+            List<EthosResponse<List<com.ellucian.generated.eedm.persons.v6_0.Persons>>> ethosResponseList = ethosFilterQueryClient.getPagesWithFilterMap( resource, version, filterMap, pageSize, com.ellucian.generated.eedm.persons.v6_0.Persons.class );
+            System.out.println( "Number of pages returned: " + ethosResponseList.size() );
+            // Each EthosResponse in the list represents a page of data.  So iterate through the ethosResponseList for each page.
+            for( EthosResponse<List<com.ellucian.generated.eedm.persons.v6_0.Persons>> ethosResponse : ethosResponseList ) {
+                // The response body in each ethosResponse is a list of Persons JavaBean objects.  So get that list.
+                List<com.ellucian.generated.eedm.persons.v6_0.Persons> personsList = ethosResponse.getContentAsType();
+                System.out.println( "PAGE SIZE: " + personsList.size() );
+                // Iterate through the personsList for each person row.
+                for( com.ellucian.generated.eedm.persons.v6_0.Persons persons : personsList ) {
+                    // We can use the getter methods on the persons object for easier property access, but just print out toString() here.
+                    System.out.println( "PERSON: " + persons.toString() );
+                }
+                System.out.println( "REQUESTED URL: " + ethosResponse.getRequestedUrl() );
             }
         }
         catch( IOException ioe ) {
@@ -366,7 +689,56 @@ public class EthosFilterQueryClientExample {
             for( EthosResponse ethosResponse : ethosResponseList ) {
                 System.out.println( "REQUESTED URL: " + ethosResponse.getRequestedUrl() );
                 // Printing out the response JSON string, but the response body can be handled using the Jackson JsonNode library.
-                System.out.println( "PAGE SIZE: " + ethosResponse.getContentAsJson().size() );
+                JsonNode jsonNode = ethosResponse.getContentAsJson();
+                System.out.println( "PAGE SIZE: " + jsonNode.size() );
+                System.out.println( jsonNode.toString() );
+            }
+        }
+        catch( IOException ioe ) {
+            ioe.printStackTrace();
+        }
+    }
+
+    /**
+     * This example shows how filter map requests also support paging when multiple pages are returned.
+     * This uses a filter map on a GET request returning a list of EthosResponses where each EthosResponse
+     * represents one page of data and contains a list of JavaBeans as the response body for easier property access.
+     * In this example, a calculation is done to retrieve only the last 5% of rows due to the potential for paging across
+     * many rows of data.
+     */
+    public void getPagesFromOffsetUsingFilterMapValuesAsJavaBeans() {
+        System.out.println( "******* getPagesFromOffsetUsingFilterMapValuesAsJavaBeans() *******" );
+        String resourceName = "persons";
+        String version = "application/vnd.hedtech.integration.v6+json";
+        String filterMapKey = "firstName";
+        String filterMapValue = "John";
+        int pageSize = 50;
+        EthosFilterQueryClient ethosFilterQueryClient = getEthosFilterQueryClient();
+        try {
+            FilterMap filterMap = new FilterMap.Builder()
+                    .withParameterPair(filterMapKey, filterMapValue)
+                    .build();
+            int totalCount = ethosFilterQueryClient.getTotalCount( resourceName, version, filterMap );
+            // Calculate the offset to be 95% of the totalCount to avoid paging through potentially tons of pages.
+            int offset = (int)(totalCount * 0.95);
+            // Specifying v6 of the Persons JavaBean to make the request with per the version header value above.
+            List<EthosResponse<List<com.ellucian.generated.eedm.persons.v6_0.Persons>>> ethosResponseList = ethosFilterQueryClient.getPagesFromOffsetWithFilterMap( resourceName, version, filterMap, pageSize, offset, com.ellucian.generated.eedm.persons.v6_0.Persons.class );
+            System.out.println(String.format("Get data for resource: %s", resourceName));
+            System.out.println(String.format("Calculated offset of %s which is 95 percent of a total count of %s to avoid paging through potentially lots of pages.", offset, totalCount));
+            System.out.println("To run with more paging, manually set the offset to a lower value, or reduce the percentage of the total count.");
+            System.out.println( "Number of pages returned: " + ethosResponseList.size() );
+            System.out.println( "OFFSET: " + offset );
+            // Each EthosResponse in the list represents a page of data.  So iterate through the ethosResponseList for each page.
+            for( EthosResponse<List<com.ellucian.generated.eedm.persons.v6_0.Persons>> ethosResponse : ethosResponseList ) {
+                // The response body in each ethosResponse is a list of Persons JavaBean objects.  So get that list.
+                List<com.ellucian.generated.eedm.persons.v6_0.Persons> personsList = ethosResponse.getContentAsType();
+                System.out.println( "PAGE SIZE: " + personsList.size() );
+                // Iterate through the personsList for each person row.
+                for( com.ellucian.generated.eedm.persons.v6_0.Persons persons : personsList ) {
+                    // We can use the getter methods on the persons object for easier property access, but just print out toString() here.
+                    System.out.println( "PERSON: " + persons.toString() );
+                }
+                System.out.println( "REQUESTED URL: " + ethosResponse.getRequestedUrl() );
             }
         }
         catch( IOException ioe ) {
@@ -392,7 +764,38 @@ public class EthosFilterQueryClientExample {
             EthosResponse ethosResponse = ethosFilterQueryClient.getWithCriteriaFilter( resourceName, version, cf );
             System.out.println( "REQUEST URL: " + ethosResponse.getRequestedUrl() );
             // Printing out the response JSON string, but the response body can be handled using the Jackson JsonNode library.
-            System.out.println( "RESPONSE: " + ethosResponse.getContent());
+            JsonNode jsonNode = ethosResponse.getContentAsJson();
+            System.out.println( "PAGE SIZE: " + jsonNode.size() );
+            System.out.println( jsonNode.toPrettyString() );
+        }
+        catch( IOException ioe ) {
+            ioe.printStackTrace();
+        }
+    }
+
+    /**
+     * This is an example of using a criteria filter request with multiple criteria in
+     * a MultiCriteriaObject.  This criteria filter structure is only used with (Banner) business API requests,
+     * and not Ethos (EEDM) API requests.
+     */
+    public void getAccountCodesWithCriteriaFilterAsJavaBeans() {
+        System.out.println( "******* getAccountCodesWithCriteriaFilterAsJavaBeans() *******" );
+        String resourceName = "account-codes";
+        String version = "application/json";
+        EthosFilterQueryClient ethosFilterQueryClient = getEthosFilterQueryClient();
+        try {
+            CriteriaFilter cf = new SimpleCriteria.Builder()
+                    .withMultiCriteriaObject(null,"acctCode", "04", false)
+                    .addSimpleCriteria("statusInd", "A")
+                    .buildCriteriaFilter();
+            // Specify the AccountCodes100GetResponse JavaBean to make this request with.
+            EthosResponse<List<AccountCodes100GetResponse>> ethosResponse = ethosFilterQueryClient.getWithCriteriaFilter( resourceName, version, cf, AccountCodes100GetResponse.class );
+            // The ethosResponse contains a list of account codes JavaBeans as the response body, so iterate through that list.
+            List<AccountCodes100GetResponse> accountCodes100GetResponseList = ethosResponse.getContentAsType();
+            for( AccountCodes100GetResponse accountCodes100GetResponse : accountCodes100GetResponseList ) {
+                // We could use the getter methods on the account codes JavaBean for easy property access, but just printing toString() here.
+                System.out.println( "ACCOUNT CODES: " + accountCodes100GetResponse.toString() );
+            }
         }
         catch( IOException ioe ) {
             ioe.printStackTrace();
