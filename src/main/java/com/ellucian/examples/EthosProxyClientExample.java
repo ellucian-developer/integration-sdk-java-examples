@@ -10,6 +10,10 @@ import com.ellucian.ethos.integration.client.EthosClientBuilder;
 import com.ellucian.ethos.integration.client.EthosResponse;
 import com.ellucian.ethos.integration.client.EthosResponseConverter;
 import com.ellucian.ethos.integration.client.proxy.EthosProxyClient;
+import com.ellucian.generated.eedm.person_holds.v6_0.Person;
+import com.ellucian.generated.eedm.person_holds.v6_0.PersonHolds;
+import com.ellucian.generated.eedm.person_holds.v6_0.Type;
+import com.ellucian.generated.eedm.student_cohorts.v7_2_0.StudentCohorts;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
@@ -20,6 +24,7 @@ import org.apache.http.client.HttpResponseException;
 import java.io.IOException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -56,17 +61,21 @@ public class EthosProxyClientExample {
         }
         EthosProxyClientExample ethosProxyClientExample = new EthosProxyClientExample( apiKey, getByIdGUID );
         ethosProxyClientExample.doGetResourceByIdExample();
-        ethosProxyClientExample.doGetResourceAsStringByIdExample();
-        ethosProxyClientExample.doGetResourceAsJsonNodeByIdExample();
+        ethosProxyClientExample.doGetResourceByIdAsStringExample();
+        ethosProxyClientExample.doGetResourceByIdAsJsonNodeExample();
+        ethosProxyClientExample.doGetResourceByIdAsJavaBeanExample();
         ethosProxyClientExample.doGetResourcePageSizeExample();
         ethosProxyClientExample.doGetResourceMaxPageSizeExample();
         ethosProxyClientExample.doGetResourceExample();
         ethosProxyClientExample.doGetResourceAsStringExample();
         ethosProxyClientExample.doGetResourceAsJsonNodeExample();
+        ethosProxyClientExample.doGetResourceAsJavaBeanExample();
         ethosProxyClientExample.doGetResourceFromOffsetExample();
         ethosProxyClientExample.doGetResourceFromOffsetAsStringExample();
+        ethosProxyClientExample.doGetResourceFromOffsetAsJavaBeansExample();
         ethosProxyClientExample.doGetResourceWithPageSizeExample();
         ethosProxyClientExample.doGetResourceWithPageSizeAsJsonNodeExample();
+        ethosProxyClientExample.doGetResourceWithPageSizeAsJavaBeansExample();
         /*************************************************************
         Commenting the following methods, see block comment below.
         ethosProxyClientExample.doGetAllPagesExample();
@@ -76,19 +85,27 @@ public class EthosProxyClientExample {
         ethosProxyClientExample.doGetAllPagesFromOffsetExample();
         ethosProxyClientExample.doGetAllPagesFromOffsetAsStringsExample();
         ethosProxyClientExample.doGetAllPagesFromOffsetAsJsonNodesExample();
+        ethosProxyClientExample.doGetAllPagesFromOffsetAsJavaBeansExample();
         ethosProxyClientExample.doGetPagesExample();
         ethosProxyClientExample.doGetPagesAsStringsExample();
         ethosProxyClientExample.doGetPagesAsJsonNodesExample();
+        ethosProxyClientExample.doGetPagesAsJavaBeansExample();
         ethosProxyClientExample.doGetPagesFromOffsetExample();
         ethosProxyClientExample.doGetPagesFromOffsetAsStringsExample();
         ethosProxyClientExample.doGetPagesFromOffsetAsJsonNodesExample();
+        ethosProxyClientExample.doGetPagesFromOffsetAsJavaBeansExample();
         ethosProxyClientExample.doGetRowsExample();
         ethosProxyClientExample.doGetRowsAsStringsExample();
         ethosProxyClientExample.doGetRowsAsJsonNodesExample();
+        ethosProxyClientExample.doGetRowsAsJavaBeansExample();
         ethosProxyClientExample.doGetRowsFromOffsetExample();
         ethosProxyClientExample.doGetRowsFromOffsetAsStringsExample();
         ethosProxyClientExample.doGetRowsFromOffsetAsJsonNodesExample();
-        ethosProxyClientExample.doCRUDExample();
+        ethosProxyClientExample.doGetRowsFromOffsetAsJavaBeansExample();
+        ethosProxyClientExample.doGetResourcePageSizeExample();
+        ethosProxyClientExample.doGetResourceMaxPageSizeExample();
+        ethosProxyClientExample.doPostPutUsingJsonNodeExample();
+        ethosProxyClientExample.doPostPutUsingJavaBeansExample();
     }
 
 
@@ -182,6 +199,30 @@ public class EthosProxyClientExample {
     }
 
     /**
+     * This example gets a page of data as a list of JavaBeans for the given resource.
+     */
+    public void doGetResourceAsJavaBeanExample() {
+        EthosProxyClient ethosProxyClient = getEthosProxyClient();
+        try {
+            String resourceName = "student-cohorts";
+            // Specify the JavaBean class for the resource, ensure the version of the imported JavaBean package is correct.
+            EthosResponse<List<StudentCohorts>> ethosResponse = ethosProxyClient.get( resourceName, StudentCohorts.class );
+            // Get a list of StudentCohorts JavaBeans from the response.
+            List<StudentCohorts> studentCohortsList = ethosResponse.getContentAsType();
+            System.out.println( "******* doGetResourceAsJavaBeanExample() *******" );
+            System.out.println(String.format("Get data for resource: %s", resourceName));
+            System.out.println("getAsJavaBean() PAGE SIZE: " + studentCohortsList.size());
+            for( StudentCohorts studentCohorts : studentCohortsList ) {
+                // We can more easily access the properties with getter methods on the StudentCohorts JavaBean, but to
+                // see the content just output toString().
+                System.out.println("getAsJavaBean() RESPONSE: " + studentCohorts.toString() );
+            }
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
+    }
+
+    /**
      * This example gets a page of data from some offset as an EthosResponse for the given resource.
      */
     public void doGetResourceFromOffsetExample() {
@@ -227,6 +268,31 @@ public class EthosProxyClientExample {
     }
 
     /**
+     * This example gets an EthosResponse containing a response body as JavaBeans from some offset for the given resource.
+     */
+    public void doGetResourceFromOffsetAsJavaBeansExample() {
+        EthosProxyClient ethosProxyClient = getEthosProxyClient();
+        try {
+            String resourceName = "student-cohorts";
+            int offset = 20;
+            // Specify the JavaBean class for the resource, ensure the version of the imported JavaBean package is correct.
+            EthosResponse<List<StudentCohorts>> ethosResponse = ethosProxyClient.getFromOffset( resourceName, offset, StudentCohorts.class );
+            // Get the response body content as a list of JavaBeans from the EthosResponse.
+            List<StudentCohorts> studentCohortsList = ethosResponse.getContentAsType();
+            System.out.println( "******* doGetResourceFromOffsetAsJavaBeansExample() *******" );
+            System.out.println(String.format("Get data for resource: %s", resourceName));
+            System.out.println( String.format("OFFSET: %s", offset) );
+            for( StudentCohorts studentCohorts : studentCohortsList ) {
+                // We can more easily access the properties with getter methods on the StudentCohorts JavaBean, but to
+                // see the content just output toString().
+                System.out.println("getAsJavaBean() RESPONSE: " + studentCohorts.toString() );
+            }
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
+    }
+
+    /**
      * This example gets the given resource with the specified page size.
      * The returned response will contain the page size (number of rows) specified.
      */
@@ -260,6 +326,31 @@ public class EthosProxyClientExample {
             System.out.println(String.format("Get data for resource: %s", resourceName));
             System.out.println("getWithPageSizeAsJsonNode() PAGE SIZE: " + response.size());
             System.out.println("getWithPageSizeAsJsonNode() RESPONSE: " + response.toString() );
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
+    }
+
+    /**
+     * This example gets an EthosResponse containing a response body as JavaBeans with some page size for the given resource.
+     */
+    public void doGetResourceWithPageSizeAsJavaBeansExample() {
+        EthosProxyClient ethosProxyClient = getEthosProxyClient();
+        try {
+            String resourceName = "student-cohorts";
+            int pageSize = 30;
+            // Specify the JavaBean class for the resource, ensure the version of the imported JavaBean package is correct.
+            EthosResponse<List<StudentCohorts>> ethosResponse = ethosProxyClient.getWithPageSize( resourceName, pageSize, StudentCohorts.class );
+            // Get the response body content as a list of JavaBeans from the EthosResponse.
+            List<StudentCohorts> studentCohortsList = ethosResponse.getContentAsType();
+            System.out.println( "******* doGetResourceWithPageSizeAsJavaBeansExample() *******" );
+            System.out.println(String.format("Get data for resource: %s", resourceName));
+            System.out.println("getWithPageSizeAsJsonNode() PAGE SIZE: " + studentCohortsList.size());
+            for( StudentCohorts studentCohorts : studentCohortsList ) {
+                // We can more easily access the properties with getter methods on the StudentCohorts JavaBean, but to
+                // see the content just output toString().
+                System.out.println("getAsJavaBean() RESPONSE: " + studentCohorts.toString() );
+            }
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }
@@ -424,6 +515,41 @@ public class EthosProxyClientExample {
     }
 
     /**
+     * This example gets all pages for the given resource from some calculated offset value to demonstrate getting all
+     * pages without paging for a long period of time through a potentially large volume of data.
+     * The EthosResponse returned contains a response body of JavaBeans for easier access to the contained data properties.
+     */
+    public void doGetAllPagesFromOffsetAsJavaBeansExample() {
+        EthosProxyClient ethosProxyClient = getEthosProxyClient();
+        try {
+            String resourceName = "student-cohorts";
+            int totalCount = ethosProxyClient.getTotalCount( resourceName );
+            // Calculate the offset to be 95% of the totalCount to avoid paging through potentially tons of pages.
+            int offset = (int)(totalCount * 0.95);
+            EthosResponseConverter ethosResponseConverter = new EthosResponseConverter();
+            List<EthosResponse<List<StudentCohorts>>> ethosResponseList = ethosProxyClient.getAllPagesFromOffset( resourceName, offset, StudentCohorts.class );
+            System.out.println( "******* doGetAllPagesFromOffsetAsJavaBeansExample() *******" );
+            System.out.println(String.format("Get data for resource: %s", resourceName));
+            System.out.println(String.format("Calculated offset of %s which is 95 percent of a total count of %s to avoid paging through potentially lots of pages.", offset, totalCount));
+            System.out.println("To run with more paging, manually set the offset to a lower value, or reduce the percentage of the total count.");
+            for( int i = 0; i < ethosResponseList.size(); i++ ) {
+                EthosResponse<List<StudentCohorts>> ethosResponse = ethosResponseList.get( i );
+                List<StudentCohorts> studentCohortsList = ethosResponse.getContentAsType();
+                System.out.println( String.format("PAGE %s SIZE: %s", (i+1), studentCohortsList.size()) );
+                for( StudentCohorts studentCohorts : studentCohortsList ) {
+                    // We can more easily access the properties with getter methods on the StudentCohorts JavaBean, but to
+                    // see the content just output toString().
+                    System.out.println( String.format("PAGE %s: %s", (i+1), studentCohorts.toString()) );
+                }
+                System.out.println( String.format("PAGE %s REQUESTED URL: %s ", (i+1), ethosResponse.getRequestedUrl()) );
+            }
+            System.out.println( String.format("OFFSET: %s", offset) );
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
+    }
+
+    /**
      * This example shows how to get some number of pages containing the specified page size.  Each EthosResponse in
      * the returned list represents a page of data.
      */
@@ -487,6 +613,36 @@ public class EthosProxyClientExample {
                 JsonNode jsonNode = jsonNodeList.get( i );
                 System.out.println( String.format("PAGE %s: %s", (i+1), jsonNode.toString()) );
                 System.out.println( String.format("PAGE %s SIZE: %s", (i+1), jsonNode.size()) );
+            }
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
+    }
+
+    /**
+     * This example shows how to get some number of pages containing the specified page size.  Each EthosResponse in
+     * the returned list represents a page of data, and contains the response body as a list of JavaBeans for easier
+     * property access.
+     */
+    public void doGetPagesAsJavaBeansExample() {
+        EthosProxyClient ethosProxyClient = getEthosProxyClient();
+        try {
+            String resourceName = "student-cohorts";
+            int pageSize = 15;
+            int numPages = 3;
+            List<EthosResponse<List<StudentCohorts>>> ethosResponseList = ethosProxyClient.getPages( resourceName, pageSize, numPages, StudentCohorts.class );
+            System.out.println( "******* doGetPagesAsJavaBeansExample() *******" );
+            System.out.println(String.format("Get data for resource: %s", resourceName));
+            for( int i = 0; i < ethosResponseList.size(); i++ ) {
+                EthosResponse<List<StudentCohorts>> ethosResponse = ethosResponseList.get( i );
+                List<StudentCohorts> studentCohortsList = ethosResponse.getContentAsType();
+                System.out.println( String.format("PAGE %s SIZE: %s", (i+1), studentCohortsList.size()) );
+                for( StudentCohorts studentCohorts : studentCohortsList ) {
+                    // We can more easily access the properties with getter methods on the StudentCohorts JavaBean, but to
+                    // see the content just output toString().
+                    System.out.println( String.format("PAGE %s: %s", (i+1), studentCohorts.toString()) );
+                }
+                System.out.println( String.format("PAGE %s REQUESTED URL: %s ", (i+1), ethosResponseList.get(i).getRequestedUrl()) );
             }
         } catch (IOException ioe) {
             ioe.printStackTrace();
@@ -575,6 +731,39 @@ public class EthosProxyClientExample {
     }
 
     /**
+     * This example shows how to some number of pages containing the specified page size from the specified offset
+     * for the given resource.  Each EthosResponse in the returned list represents a page of data, and contains the response
+     * body as a list of JavaBeans for easier property access.
+     */
+    public void doGetPagesFromOffsetAsJavaBeansExample() {
+        EthosProxyClient ethosProxyClient = getEthosProxyClient();
+        try {
+            String resourceName = "student-cohorts";
+            int pageSize = 15;
+            int offset = 10;
+            int numPages = 3;
+            List<EthosResponse<List<StudentCohorts>>> ethosResponseList = ethosProxyClient.getPagesFromOffset( resourceName, pageSize, offset, numPages, StudentCohorts.class );
+            System.out.println( "******* doGetPagesFromOffsetAsJavaBeansExample() *******" );
+            System.out.println(String.format("Get data for resource: %s", resourceName));
+            System.out.println( String.format("OFFSET: %s", offset) );
+            for( int i = 0; i < ethosResponseList.size(); i++ ) {
+                EthosResponse<List<StudentCohorts>> ethosResponse = ethosResponseList.get( i );
+                List<StudentCohorts> studentCohortsList = ethosResponse.getContentAsType();
+                System.out.println( String.format("PAGE %s SIZE: %s", (i+1), studentCohortsList.size()) );
+                for( StudentCohorts studentCohorts : studentCohortsList ) {
+                    // We can more easily access the properties with getter methods on the StudentCohorts JavaBean, but to
+                    // see the content just output toString().
+                    System.out.println( String.format("PAGE %s: %s", (i+1), studentCohorts.toString()) );
+                }
+                System.out.println( String.format("PAGE %s REQUESTED URL: %s ", (i+1), ethosResponseList.get(i).getRequestedUrl()) );
+            }
+            System.out.println( String.format("NUM PAGES: %s", ethosResponseList.size()) );
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
+    }
+
+    /**
      * This example shows how to get some number of rows using the specified page size for the given resource.
      * Each EthosResponse contains some number of rows up to the specified page size.  All EthosResponses in the
      * returned list together should contain the requested number of rows.
@@ -608,6 +797,7 @@ public class EthosProxyClientExample {
             ioe.printStackTrace();
         }
     }
+
 
     /**
      * This example shows how to get some number of rows as JSON formatted strings using the specified page size for the given resource.
@@ -660,6 +850,47 @@ public class EthosProxyClientExample {
                 JsonNode jsonNode = jsonNodeList.get( i );
                 System.out.println( String.format("ROW %s: %s", (i+1), jsonNode.toString()) );
             }
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
+    }
+
+    /**
+     * This example shows how to get some number of rows using the specified page size for the given resource.
+     * Each EthosResponse contains some number of rows up to the specified page size.  All EthosResponses in the
+     * returned list together should contain the requested number of rows.  Each EthosResponse in
+     * the returned list represents a page of data, and contains the response body as a list of JavaBeans for easier
+     * property access.
+     */
+    public void doGetRowsAsJavaBeansExample() {
+        EthosProxyClient ethosProxyClient = getEthosProxyClient();
+        try {
+            String resourceName = "student-cohorts";
+            String version = "application/vnd.hedtech.integration.v7.2.0+json";
+            // The List<EthosResponse> returned by the getRows() method is page-based, not row-based, even though it is
+            // returning some number of rows because of the ancillary header information, requested URL, etc.
+            // that is pertinent to each page contained in each EthosResponse.
+            // This specifies the page size to use when getting the number of rows as a list of EthosResponses.
+            int pageSize = 15;
+            int numRows = 40;
+            int rowCount = 0;
+            EthosResponseConverter ethosResponseConverter = new EthosResponseConverter();
+            List<EthosResponse<List<StudentCohorts>>> ethosResponseList = ethosProxyClient.getRows( resourceName, version, pageSize, numRows, StudentCohorts.class );
+            System.out.println( "******* doGetRowsAsJavaBeansExample() *******" );
+            System.out.println(String.format("Get data for resource: %s", resourceName));
+            for( int i = 0; i < ethosResponseList.size(); i++ ) {
+                EthosResponse<List<StudentCohorts>> ethosResponse = ethosResponseList.get( i );
+                List<StudentCohorts> studentCohortsList = ethosResponse.getContentAsType();
+                System.out.println( String.format("PAGE %s SIZE: %s", (i+1), studentCohortsList.size()) );
+                rowCount += studentCohortsList.size();
+                for( StudentCohorts studentCohorts : studentCohortsList ) {
+                    // We can more easily access the properties with getter methods on the StudentCohorts JavaBean, but to
+                    // see the content just output toString().
+                    System.out.println( String.format("PAGE %s: %s", (i+1), studentCohorts.toString()) );
+                }
+                System.out.println( String.format("PAGE %s REQUESTED URL: %s ", (i+1), ethosResponseList.get(i).getRequestedUrl()) );
+            }
+            System.out.println( String.format("NUM ROWS: %s", rowCount) );
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }
@@ -763,6 +994,48 @@ public class EthosProxyClientExample {
     }
 
     /**
+     * This example shows how to get some number of rows from the specified offset using the specified page size for
+     * the given resource.  Each EthosResponse contains some number of rows up to the specified page size.  All EthosResponses in the
+     * returned list together should contain the requested number of rows.  Each EthosResponse in
+     * the returned list represents a page of data, and contains the response body as a list of JavaBeans for easier
+     * property access.
+     */
+    public void doGetRowsFromOffsetAsJavaBeansExample() {
+        EthosProxyClient ethosProxyClient = getEthosProxyClient();
+        try {
+            String resourceName = "student-cohorts";
+            String version = "application/json";
+            // The List<EthosResponse> returned by the getRowsFromOffset() method is page-based, not row-based, even
+            // though it is returning some number of rows because of the ancillary header information, requested URL, etc.
+            // that is pertinent to each page contained in each EthosResponse.
+            // This specifies the page size to use when getting the number of rows as a list of EthosResponses.
+            int pageSize = 15;
+            int offset = 10;
+            int numRows = 24;
+            int rowCount = 0;
+            List<EthosResponse<List<StudentCohorts>>> ethosResponseList = ethosProxyClient.getRowsFromOffset( resourceName, version, pageSize, offset, numRows, StudentCohorts.class );
+            System.out.println( "******* doGetRowsFromOffsetAsJavaBeansExample() *******" );
+            System.out.println(String.format("Get data for resource: %s", resourceName));
+            System.out.println( String.format("OFFSET: %s", offset) );
+            for( int i = 0; i < ethosResponseList.size(); i++ ) {
+                EthosResponse<List<StudentCohorts>> ethosResponse = ethosResponseList.get( i );
+                List<StudentCohorts> studentCohortsList = ethosResponse.getContentAsType();
+                System.out.println( String.format("PAGE %s SIZE: %s", (i+1), studentCohortsList.size()) );
+                rowCount += studentCohortsList.size();
+                for( StudentCohorts studentCohorts : studentCohortsList ) {
+                    // We can more easily access the properties with getter methods on the StudentCohorts JavaBean, but to
+                    // see the content just output toString().
+                    System.out.println( String.format("PAGE %s: %s", (i+1), studentCohorts.toString()) );
+                }
+                System.out.println( String.format("PAGE %s REQUESTED URL: %s ", (i+1), ethosResponseList.get(i).getRequestedUrl()) );
+            }
+            System.out.println( String.format("NUM ROWS: %s", rowCount) );
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
+    }
+
+    /**
      * This is an example of how to get a resource by ID (GUID).
      * The returned EthosResponse contains a JSON formatted string response body for the single instance of the resource
      * for the given ID.
@@ -793,7 +1066,7 @@ public class EthosProxyClientExample {
      * The response is a JSON formatted string response body for the single instance of the resource
      * for the given ID.
      */
-    public void doGetResourceAsStringByIdExample() {
+    public void doGetResourceByIdAsStringExample() {
         EthosProxyClient ethosProxyClient = getEthosProxyClient();
         String resource = "student-cohorts";
         try {
@@ -818,7 +1091,7 @@ public class EthosProxyClientExample {
      * The response is a JsonNode response body for the single instance of the resource
      * for the given ID.
      */
-    public void doGetResourceAsJsonNodeByIdExample() {
+    public void doGetResourceByIdAsJsonNodeExample() {
         EthosProxyClient ethosProxyClient = getEthosProxyClient();
         String resource = "student-cohorts";
         try {
@@ -834,6 +1107,31 @@ public class EthosProxyClientExample {
             }
         }
         catch( IOException ioe ) {
+            ioe.printStackTrace();
+        }
+    }
+
+    /**
+     * This is an example of how to get a resource by ID (GUID).
+     * The returned EthosResponse contains a JavaBean for the single instance of the resource for the given ID.
+     */
+    public void doGetResourceByIdAsJavaBeanExample() {
+        EthosProxyClient ethosProxyClient = getEthosProxyClient();
+        String resource = "student-cohorts";
+        try {
+            if (getByIdGUID != null && getByIdGUID.isBlank() == false) {
+                EthosResponse<StudentCohorts> ethosResponse = ethosProxyClient.getById(resource, getByIdGUID, StudentCohorts.class);
+                System.out.println("******* doGetResourceByIdAsJavaBeanExample() *******");
+                System.out.println(String.format("RESOURCE: %s", resource));
+                System.out.println(String.format("RESOURCE ID: %s", getByIdGUID));
+                // Get the studentCohorts response body as a JavaBean from the ethosResponse.
+                StudentCohorts studentCohorts = ethosResponse.getContentAsType();
+                System.out.println(String.format("RESPONSE: %s", studentCohorts.toString()));
+                System.out.println(String.format("REQUESTED URL: %s ", ethosResponse.getRequestedUrl()));
+            } else {
+                System.out.println("******* Skipping doGetResourceByIdExample() because the getByIdGUID was not set.  Please pass in a valid GUID value as a 2nd program argument to run this method. *******");
+            }
+        } catch (IOException ioe) {
             ioe.printStackTrace();
         }
     }
@@ -873,53 +1171,141 @@ public class EthosProxyClientExample {
         }
     }
 
-    public void doCRUDExample() {
+    /**
+     * This is an example of using the Ethos Integration SDK with the Jackson JsonNode library.
+     * Jackson is a popular Java library for handling JSON formatted data, which can be used with the Ethos Integration SDK
+     * to help manage the requests and responses from API calls through the SDK.
+     * This example does the following:
+     * 1) Finds a person record.
+     * 2) Builds a personHold Jackson ObjectNode with request body data.
+     * 3) Makes a POST request to apply a new person hold for the given person.
+     * 4) Changes the startOn date for the person hold.
+     * 5) Makes a PUT request to update the person hold for the given person.
+     * 6) Deletes the person hold.
+     * 7) Tries to read the same person hold that was deleted to ensure it cannot be read.
+     */
+    public void doPostPutUsingJsonNodeExample() {
         EthosProxyClient ethosProxyClient = getEthosProxyClient();
-        System.out.println("******* doCRUDExample() *******");
-
         try {
-            // get a single person record
+            System.out.println("******* applyPersonHoldUsingJsonNodes() *******");
+            System.out.println( "Finding a person record to use..." );
+            // Get a single person record.
             List<EthosResponse> responses = ethosProxyClient.getRows("persons", 1);
-            JsonNode person = responses.get(0).getContentAsJson();
-            String personId = person.elements().next().get("id").asText();
+            // Get the response body content as a JsonNode.
+            JsonNode personNode = responses.get(0).getContentAsJson();
+            String personId = personNode.elements().next().get("id").asText();
 
-            // build a person-holds resource
+            // Build a person-holds resource using JsonNodes.
             Instant rightNow = Instant.now().truncatedTo(ChronoUnit.SECONDS);
-            ObjectNode personHold = JsonNodeFactory.instance.objectNode();
-            personHold.put("id", "00000000-0000-0000-0000-000000000000");
-            personHold.put("startOn", rightNow.toString());
-            // add a person object with 'id'
-            personHold.putObject("person").put("id", personId);
-            // add a type object with 'category'
-            personHold.putObject("type").put("category", "financial");
+            ObjectNode personHoldNode = JsonNodeFactory.instance.objectNode();
+            personHoldNode.put("id", "00000000-0000-0000-0000-000000000000");
+            personHoldNode.put("startOn", rightNow.toString());
+            // Add a person object with 'id' to the personHold node.
+            personHoldNode.putObject("person").put("id", personId);
+            // Add a type object with 'category' to the personHold node.
+            personHoldNode.putObject("type").put("category", "financial");
 
-            // send a POST request to create a new person-holds record
-            EthosResponse response = ethosProxyClient.post("person-holds", personHold);
+            // Send a POST request to create a new person-holds record, with the personHold JsonNode as the request body.
+            EthosResponse response = ethosProxyClient.post("person-holds", personHoldNode);
             System.out.println("Created a 'person-holds' record:");
             System.out.println(response.getContent());
 
-            // get the 'id' of the new record
+            // Get the 'id' of the new record
             String newId = response.getContentAsJson().get("id").asText();
 
-            // change the date on the person-holds record and send a PUT request to update the record
-            personHold.remove("id");
-            personHold.put("startOn", rightNow.plus(1, ChronoUnit.DAYS).toString());
-            response = ethosProxyClient.put("person-holds", newId, personHold);
+            // Change the date on the person-holds record and send a PUT request to update the record.
+            personHoldNode.remove("id");
+            personHoldNode.put("startOn", rightNow.plus(1, ChronoUnit.DAYS).toString());
+            response = ethosProxyClient.put("person-holds", newId, personHoldNode);
             System.out.println(String.format("Successfully updated person-holds record %s.", newId));
 
-            // delete the record
+            // Delete the record
             ethosProxyClient.delete("person-holds", newId);
             System.out.println(String.format("Successfully deleted person-holds record %s.", newId));
 
-            // attempt to get the record that was created and make sure that fails
+            // Attempt to get the record that was created and make sure that fails.
             try{
                 ethosProxyClient.getById("person-holds", newId);
-            } catch (HttpResponseException ex) {
+            }
+            catch (HttpResponseException ex) {
                 System.out.println(String.format("Failed to get person-holds record %s.  The delete was successful.", newId));
             }
+            System.out.println( "Done." );
+            System.out.println("===============================================");
         }
         catch( IOException ioe ) {
             ioe.printStackTrace();
         }
     }
+
+    /**
+     * This is an example of using the Ethos Integration SDK with the Ethos Integration SDK objects library.
+     * This library contains strongly typed objects (JavaBeans).  JavaBeans are like data transfer objects (DTOs)
+     * that help manage the requests and responses from API calls through the SDK.
+     * This example does the following:
+     * 1) Finds a person record.
+     * 2) Builds a PersonHolds object with request body data.
+     * 3) Makes a POST request to apply a new person hold for the given person.
+     * 4) Changes the startOn date for the person hold.
+     * 5) Makes a PUT request to update the person hold for the given person.
+     * 6) Deletes the person hold.
+     * 7) Tries to read the same person hold that was deleted to ensure it cannot be read.
+     */
+    public void doPostPutUsingJavaBeansExample() {
+        EthosProxyClient ethosProxyClient = getEthosProxyClient();
+        try {
+            System.out.println("\n\n--- Running apply person holds example... ---");
+            System.out.println( "Finding a person record to use..." );
+            // Get a single person record.
+            List<EthosResponse> responses = ethosProxyClient.getRows("persons", 1);
+            JsonNode personNode = responses.get(0).getContentAsJson();
+            String personId = personNode.elements().next().get("id").asText();
+            System.out.println(String.format("Found a person ID: %s", personId));
+
+            // Build a person-holds resource using JavaBean objects.
+            System.out.println("Building strongly typed object...");
+            Instant rightNow = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+            System.out.println(String.format("RIGHT NOW: %S", rightNow));
+            System.out.println(String.format("DATE NOW: %s", Date.from(rightNow)));
+            PersonHolds personHolds = new PersonHolds();
+            personHolds.setId("00000000-0000-0000-0000-000000000000");
+            personHolds.setStartOn(Date.from(rightNow));
+            Person person = new Person();
+            person.setId(personId);
+            personHolds.setPerson(person);
+            Type personHoldsType = new Type();
+            personHoldsType.setCategory(Type.Category.FINANCIAL);
+            personHolds.setType(personHoldsType);
+
+            // Send a POST request to create a new person-holds record.
+            EthosResponse response = ethosProxyClient.post("person-holds", personHolds);
+            System.out.println("Created a 'person-holds' record:");
+            System.out.println(response.getContent());
+
+            // Get the 'id' of the newly added record.
+            String newId = response.getContentAsJson().get("id").asText();
+
+            // Change the date on the person-holds record and send a PUT request to update the record.
+            personHolds.setId(null);
+            personHolds.setStartOn(Date.from(rightNow.plus(1, ChronoUnit.DAYS)));
+            response = ethosProxyClient.put("person-holds", newId, personHolds);
+            System.out.println(String.format("Successfully updated person-holds record %s.", newId));
+
+            // Delete the record.
+            ethosProxyClient.delete("person-holds", newId);
+            System.out.println(String.format("Successfully deleted person-holds record %s.", newId));
+
+            // Attempt to get the record that was created and make sure that fails, since it was deleted.
+            try {
+                ethosProxyClient.getById("person-holds", newId);
+            } catch (HttpResponseException ex) {
+                System.out.println(String.format("Failed to get person-holds record %s.  The delete was successful.", newId));
+            }
+            System.out.println("Done.");
+            System.out.println("===============================================");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }
