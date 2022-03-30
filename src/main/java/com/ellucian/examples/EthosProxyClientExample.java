@@ -526,7 +526,6 @@ public class EthosProxyClientExample {
             int totalCount = ethosProxyClient.getTotalCount( resourceName );
             // Calculate the offset to be 95% of the totalCount to avoid paging through potentially tons of pages.
             int offset = (int)(totalCount * 0.95);
-            EthosResponseConverter ethosResponseConverter = new EthosResponseConverter();
             List<EthosResponse<List<StudentCohorts>>> ethosResponseList = ethosProxyClient.getAllPagesFromOffset( resourceName, offset, StudentCohorts.class );
             System.out.println( "******* doGetAllPagesFromOffsetAsJavaBeansExample() *******" );
             System.out.println(String.format("Get data for resource: %s", resourceName));
