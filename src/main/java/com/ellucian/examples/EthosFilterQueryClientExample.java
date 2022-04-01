@@ -15,6 +15,7 @@ import com.ellucian.ethos.integration.client.proxy.filter.NamedQueryFilter;
 import com.ellucian.ethos.integration.client.proxy.filter.SimpleCriteria;
 import com.ellucian.generated.bpapi.ban.account_codes.v1_0_0.AccountCodes100GetResponse;
 import com.ellucian.generated.bpapi.ban.person_comments.v1_0_0.PersonComments100PostRequest;
+import com.ellucian.generated.bpapi.ban.person_comments.v1_0_0.PersonComments100PutRequest;
 import com.ellucian.generated.bpapi.ban.person_search.v1_0_0.PersonSearch100GetResponse;
 import com.ellucian.generated.eedm.persons.v12_4_0.Persons;
 import com.ellucian.generated.eedm.sections.v16_1_0.Sections;
@@ -54,28 +55,28 @@ public class EthosFilterQueryClientExample {
         }
         String apiKey = args[ 0 ];
         EthosFilterQueryClientExample ethosFilterQueryClientExample = new EthosFilterQueryClientExample( apiKey );
-        ethosFilterQueryClientExample.getUsingCriteriaFilterString();
-        ethosFilterQueryClientExample.getUsingCriteriaFilter();
-        ethosFilterQueryClientExample.getUsingCriteriaFilterWithJavaBeans();
-        ethosFilterQueryClientExample.getUsingNamedQueryFilter();
-        ethosFilterQueryClientExample.getUsingNamedQueryFilterWithJavaBeans();
-        ethosFilterQueryClientExample.getWithSimpleCriteriaArrayValues();
-        ethosFilterQueryClientExample.getWithSimpleCriteriaArrayValuesAsJavaBeans();
-        ethosFilterQueryClientExample.getUsingFilterMap();
-        ethosFilterQueryClientExample.getUsingFilterMapAsJavaBeans();
-        ethosFilterQueryClientExample.getPagesUsingCriteriaFilter();
-        ethosFilterQueryClientExample.getPagesUsingCriteriaFilterAsJavaBeans();
-        ethosFilterQueryClientExample.getPagesFromOffsetUsingCriteriaFilter();
-        ethosFilterQueryClientExample.getPagesFromOffsetUsingCriteriaFilterAsJavaBeans();
-        ethosFilterQueryClientExample.getPagesUsingNamedQueryFilter();
-        ethosFilterQueryClientExample.getPagesUsingNamedQueryFilterAsJavaBeans();
-        ethosFilterQueryClientExample.getPagesUsingFilterMapValues();
-        ethosFilterQueryClientExample.getPagesUsingFilterMapValuesAsJavaBeans();
-        ethosFilterQueryClientExample.getPagesFromOffsetUsingFilterMapValues();
-        ethosFilterQueryClientExample.getPagesFromOffsetUsingFilterMapValuesAsJavaBeans();
-        ethosFilterQueryClientExample.getAccountCodesWithCriteriaFilter();
-        ethosFilterQueryClientExample.getAccountCodesWithCriteriaFilterAsJavaBeans();
-        ethosFilterQueryClientExample.applyPersonCommentsUsingJsonNodes();
+//        ethosFilterQueryClientExample.getUsingCriteriaFilterString();
+//        ethosFilterQueryClientExample.getUsingCriteriaFilter();
+//        ethosFilterQueryClientExample.getUsingCriteriaFilterWithJavaBeans();
+//        ethosFilterQueryClientExample.getUsingNamedQueryFilter();
+//        ethosFilterQueryClientExample.getUsingNamedQueryFilterWithJavaBeans();
+//        ethosFilterQueryClientExample.getWithSimpleCriteriaArrayValues();
+//        ethosFilterQueryClientExample.getWithSimpleCriteriaArrayValuesAsJavaBeans();
+//        ethosFilterQueryClientExample.getUsingFilterMap();
+//        ethosFilterQueryClientExample.getUsingFilterMapAsJavaBeans();
+//        ethosFilterQueryClientExample.getPagesUsingCriteriaFilter();
+//        ethosFilterQueryClientExample.getPagesUsingCriteriaFilterAsJavaBeans();
+//        ethosFilterQueryClientExample.getPagesFromOffsetUsingCriteriaFilter();
+//        ethosFilterQueryClientExample.getPagesFromOffsetUsingCriteriaFilterAsJavaBeans();
+//        ethosFilterQueryClientExample.getPagesUsingNamedQueryFilter();
+//        ethosFilterQueryClientExample.getPagesUsingNamedQueryFilterAsJavaBeans();
+//        ethosFilterQueryClientExample.getPagesUsingFilterMapValues();
+//        ethosFilterQueryClientExample.getPagesUsingFilterMapValuesAsJavaBeans();
+//        ethosFilterQueryClientExample.getPagesFromOffsetUsingFilterMapValues();
+//        ethosFilterQueryClientExample.getPagesFromOffsetUsingFilterMapValuesAsJavaBeans();
+//        ethosFilterQueryClientExample.getAccountCodesWithCriteriaFilter();
+//        ethosFilterQueryClientExample.getAccountCodesWithCriteriaFilterAsJavaBeans();
+//        ethosFilterQueryClientExample.applyPersonCommentsUsingJsonNodes();
         ethosFilterQueryClientExample.applyPersonCommentsUsingJavaBeans();
     }
 
@@ -825,7 +826,7 @@ public class EthosFilterQueryClientExample {
             String version = "application/json";
             // Build a filterMap used to get person data.  The person-search BPAPI requires a filter with lastName to get data.
             FilterMap filterMap = new FilterMap.Builder()
-                    .withParameterPair("lastName", "Abbe")
+                    .withParameterPair("lastName", "Smith")
                     .build();
             List<EthosResponse> ethosResponseList = ethosFilterQueryClient.getPagesWithFilterMap( resourceName, version, filterMap );
             // Just pull the first response from the list...
@@ -900,7 +901,7 @@ public class EthosFilterQueryClientExample {
             String version = "application/json";
             // Build a filterMap used to get person data.  The person-search BPAPI requires a filter with lastName to get data.
             FilterMap filterMap = new FilterMap.Builder()
-                    .withParameterPair("lastName", "Abbe")
+                    .withParameterPair("lastName", "Smith")
                     .build();
             // Make a GET request using the ethosFilterQueryClient with the filterMap and the specified JavaBean class, which is used in the return type of the EthosResponse.
             List<EthosResponse<List<PersonSearch100GetResponse>>> ethosResponseList = ethosFilterQueryClient.getPagesWithFilterMap( resourceName, version, filterMap, PersonSearch100GetResponse.class );
@@ -917,7 +918,7 @@ public class EthosFilterQueryClientExample {
             // Now build a person comment JavaBean to make a POST request adding a new person comment for the given person ID.
             Instant now = Instant.now();
             Date today = Date.from( now );
-            PersonComments100PostRequest personCommentRequest = new PersonComments100PostRequest()
+            PersonComments100PostRequest personCommentsPostRequest = new PersonComments100PostRequest()
                     .withCmttCode("105")
                     .withId(personId)
                     .withConfidentialInd("s")
@@ -930,15 +931,18 @@ public class EthosFilterQueryClientExample {
             // Reset the resource name for the resource we are POSTing and PUTting to.
             resourceName = "person-comments";
             // Make a POST request to add a new person comment using a JavaBean request body object.
-            System.out.println( "Making POST request to add a new person comment for person with ID: " + personId + ", using contact date: " + personCommentRequest.getContactDate() );
-            ethosResponse = ethosFilterQueryClient.post( resourceName, personCommentRequest );
+            System.out.println( "Making POST request to add a new person comment for person with ID: " + personId + ", using contact date: " + personCommentsPostRequest.getContactDate() );
+            ethosResponse = ethosFilterQueryClient.post( resourceName, personCommentsPostRequest );
             System.out.println( "POST made using this URL: " + ethosResponse.getRequestedUrl() );
             System.out.println( "POST EthosResponse body: " + ethosResponse.getContent() );
 
+            // Now build a person comment PUT request to update the contact date.  Only the id and the updated field is required (in this case the contact date field).
+            PersonComments100PutRequest personCommentsPutRequest = new PersonComments100PutRequest()
+                    .withId(personCommentsPostRequest.getId())
+                    .withContactDate(Date.from(Instant.now().plus(1, ChronoUnit.DAYS))); // Add a day to the contact date to update it.
             // Change the contact date on the personCommentRequest so that we can make a PUT request to update it.  Adds a day to the date.
-            personCommentRequest.setContactDate( Date.from(Instant.now().plus(1, ChronoUnit.DAYS)) );
-            System.out.println( "Making PUT request with updated contact date: " + personCommentRequest.getContactDate() );
-            ethosResponse = ethosFilterQueryClient.put( resourceName, personCommentRequest );
+            System.out.println( "Making PUT request with updated contact date: " + personCommentsPutRequest.getContactDate() );
+            ethosResponse = ethosFilterQueryClient.put( resourceName, personCommentsPutRequest );
             System.out.println( "PUT made using this URL: " + ethosResponse.getRequestedUrl() );
             System.out.println( "PUT EthosResponse body: " + ethosResponse.getContent() );
         }
