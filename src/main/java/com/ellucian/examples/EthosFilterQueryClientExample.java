@@ -799,6 +799,7 @@ public class EthosFilterQueryClientExample {
                 // We could use the getter methods on the account codes JavaBean for easy property access, but just printing toString() here.
                 System.out.println( "ACCOUNT CODES: " + accountCodes100GetResponse.toString() );
             }
+            System.out.println( "REQUESTED URL:  " + ethosResponse.getRequestedUrl() );
         }
         catch( IOException ioe ) {
             ioe.printStackTrace();

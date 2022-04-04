@@ -272,23 +272,28 @@ public class EthosErrorsClientExample {
                 "          \"severity\": \"error\"," +
                 "          \"responseCode\": 500," +
                 "          \"description\": \"Internal Server Error\"," +
-                "          \"details\": \"This is a more info on the info error\"," +
+                "          \"details\": \"Testing error service from Java Ethos Integration SDK.\"," +
                 "          \"applicationId\": \"00000000-0000-0000-0000-000000000000\"," +
                 "          \"applicationName\": \"Banner\"," +
                 "          \"correlationId\": \"2468UserMade3242134\"," +
                 "          \"resource\": {" +
                 "            \"id\": \"00000000-0000-0000-0000-000000000000\"," +
-                "            \"name\": \"persons\"" +
+                "            \"name\": \"persons\"," +
+                "            \"version\":\"application/json\"" +
                 "          }," +
                 "          \"applicationSubtype\": \"EMA\"" +
                 "}";
 
         EthosErrorsClient ethosErrorsClient = getEthosErrorsClient();
         try {
+            // This prints the total error count before adding a new error.
+            getTotalErrorCount();
             EthosError ethosError = ErrorFactory.createErrorFromJson( errorStr );
             System.out.println( "CREATING ETHOS ERROR: " + ethosError.toString() );
             EthosResponse errorResponse = ethosErrorsClient.post( ethosError );
             System.out.println( String.format("Created Ethos Error: %s", errorResponse.getContent()) );
+            // This prints the total error count after adding a new error.
+            getTotalErrorCount();
         }
         catch( IOException ioe ) {
             ioe.printStackTrace();
@@ -298,16 +303,18 @@ public class EthosErrorsClientExample {
     /**
      * This example shows how to get the total error count for the given tenant (according to your API key).
      */
-    public void getTotalErrorCount() {
+    public int getTotalErrorCount() {
         System.out.println( "******* ethosErrorClient.getTotalErrorCount() *******" );
         EthosErrorsClient ethosErrorsClient = getEthosErrorsClient();
+        int totalErrorCount = 0;
         try {
-            int totalErrorCount = ethosErrorsClient.getTotalErrorCount();
+            totalErrorCount = ethosErrorsClient.getTotalErrorCount();
             System.out.println( String.format("TOTAL ERROR COUNTER: %s", totalErrorCount) );
         }
         catch( IOException ioe ) {
             ioe.printStackTrace();
         }
+        return totalErrorCount;
     }
 
     /************************************************************************************************************
