@@ -60,8 +60,9 @@ public class EthosChangeNotificationSubscriberExample {
         ethosChangeNotificationPollService.subscribe( myChangeNotificationSubscriber );
         try {
             // Sleeping to simulate time taken to do other stuff...
+            System.out.println( "Waiting 5 seconds to simulate other processing while change notifications are retrieved.");
             // Notifications should come through the MyChangeNotificationSubscriber.onChangeNotification() method.
-            Thread.sleep(3000);
+            Thread.sleep(5000);
         }
         catch( InterruptedException ie ) {
             ie.printStackTrace();
@@ -92,8 +93,9 @@ public class EthosChangeNotificationSubscriberExample {
         ethosChangeNotificationListPollService.subscribe( myChangeNotificationListSubscriber );
         try {
             // Sleeping to simulate time taken to do other stuff...
+            System.out.println( "Waiting 5 seconds to simulate other processing while change notifications are retrieved.");
             // Notifications should come through the MyChangeNotificationListSubscriber.onChangeNotificationList() method.
-            Thread.sleep(3000);
+            Thread.sleep(5000);
         }
         catch( InterruptedException ie ) {
             ie.printStackTrace();

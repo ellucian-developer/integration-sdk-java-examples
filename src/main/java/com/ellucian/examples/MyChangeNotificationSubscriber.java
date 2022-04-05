@@ -48,4 +48,10 @@ public class MyChangeNotificationSubscriber extends AbstractEthosChangeNotificat
         System.out.println( "onChangeNotificationError: " + Thread.currentThread().getName() + ", THROWABLE: " + throwable.getMessage() );
         throwable.printStackTrace();
     }
+
+    @Override
+    public void cancelSubscription() {
+        System.out.println( "Canceling my subscription for change notifications.");
+        super.cancelSubscription();
+    }
 }

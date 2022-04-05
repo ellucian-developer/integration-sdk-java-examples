@@ -65,5 +65,12 @@ public class EthosMessagesClientExample {
         System.out.println("Requesting the same set of messages again, using 'lastProcessedID=0'.");
         cnList = client.consumeFromId(0);
         System.out.printf("Retrieved '%d' messages.\n", cnList.size());
+        // Print out properties from the change notifications retrieved.
+        // The content could be accessed using JsonNode, but just printing toString() for this example.
+        for( ChangeNotification cn : cnList ) {
+            System.out.println( "Resource: " + cn.getResource().getName() +
+                                ", version: " + cn.getResource().getVersion() +
+                                ", content: " + cn.getContent().toString() );
+        }
     }
 }
