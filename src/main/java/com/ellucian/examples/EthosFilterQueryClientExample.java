@@ -55,6 +55,7 @@ public class EthosFilterQueryClientExample {
         }
         String apiKey = args[ 0 ];
         EthosFilterQueryClientExample ethosFilterQueryClientExample = new EthosFilterQueryClientExample( apiKey );
+        ethosFilterQueryClientExample.criteriaFilterExamples();
         ethosFilterQueryClientExample.getUsingCriteriaFilterString();
         ethosFilterQueryClientExample.getUsingCriteriaFilter();
         ethosFilterQueryClientExample.getUsingCriteriaFilterWithJavaBeans();
@@ -90,6 +91,151 @@ public class EthosFilterQueryClientExample {
                    .withConnectionRequestTimeout(60)
                    .withSocketTimeout(60)
                    .buildEthosFilterQueryClient();
+    }
+
+    /**
+     * This is a list of criteria filter examples showing various ways to build criteria filters and the
+     * criteria filter syntax generated.
+     */
+    public void criteriaFilterExamples() {
+        /**********************************************************************************************************
+        /* Examples 1 - 15 show how to build criteria filters primarily when making GET requests for Ethos APIs,
+        /* as opposed to BPAPIs.  However, the Ethos Integration SDK makes no distinction between Ethos API and
+        /* BPAPI requests.  How to build a criteria filter largely depends on which Ethos API a request is made for.
+        /*********************************************************************************************************/
+
+        System.out.println( "Examples 1 - 15 are primarily used for Ethos API requests as opposed to BPAPI requests, " +
+                            "though the Ethos Integration SDK makes no distinction between the type of API request. " + System.lineSeparator());
+
+        // Example 1:  This example generates this syntax:   ?criteria={"lastName":"Smith"}
+        CriteriaFilter cf = new SimpleCriteria.Builder()
+                .withSimpleCriteria("lastName", "Smith")
+                .buildCriteriaFilter();
+        System.out.println( "Example 1:  " + cf.toString() );
+
+        // Example 2:  This example generates this syntax:   ?criteria={"names":{"lastName":"Smith"}}
+        cf = new SimpleCriteria.Builder()
+                .withSimpleCriteriaObject("names", "lastName", "Smith")
+                .buildCriteriaFilter();
+        System.out.println( "Example 2:  " + cf.toString() );
+
+        // Example 3:  This example generates this syntax:   ?criteria={"ethos":{"resources":["persons","organizations"]}}
+        SimpleCriteria.Builder scBuilder = new SimpleCriteria.Builder();
+        cf = scBuilder.withSimpleCriteriaObject("ethos",
+             scBuilder.withSimpleCriteriaValueArray("resources", "persons")
+                      .addValue("organizations"))
+             .buildCriteriaFilter();
+        System.out.println( "Example 3:  " + cf.toString() );
+
+        // Example 4:  This example generates this syntax:  ?criteria={"ethos":{"startOn":{"year":2021,"month":08}}}
+        scBuilder = new SimpleCriteria.Builder();
+        cf = scBuilder.withSimpleCriteriaObject("ethos",
+             scBuilder.withMultiCriteriaObject("startOn", "year", "2021", true)
+                      .addNumericSimpleCriteria("month", "08"))
+             .buildCriteriaFilter();
+        System.out.println( "Example 4:  " + cf.toString() );
+
+        // Example 5:  This example generates this syntax:  ?criteria={"startOn":{"year":2021,"month":08}}
+        cf = new SimpleCriteria.Builder()
+                .withMultiCriteriaObject("startOn", "year", "2021", true)
+                .addNumericSimpleCriteria("month", "08")
+                .buildCriteriaFilter();
+        System.out.println( "Example 5:  " + cf.toString() );
+
+        // Example 6:  This example generates this syntax:  ?criteria={"credentials":["bannerId","colleagueId","anotherId"]}
+        cf = new SimpleCriteria.Builder()
+                .withSimpleCriteriaValueArray("credentials", "bannerId")
+                .addValue("colleagueId")
+                .addValue("anotherId")
+                .buildCriteriaFilter();
+        System.out.println( "Example 6:  " + cf.toString() );
+
+        // Example 7:  This example generates this syntax:  ?criteria={"credentials":[{"type":{"id":"11111111-1111-1111-1111-111111111111"}},{"value":"someValue"}]}
+        cf = new SimpleCriteria.Builder()
+                .withSimpleCriteriaArray("credentials")
+                .addSimpleCriteriaObject("type", "id", "11111111-1111-1111-1111-111111111111")
+                .addSimpleCriteria("value", "someValue")
+                .buildCriteriaFilter();
+        System.out.println( "Example 7:  " + cf.toString() );
+
+        // Example 8:  This example generates this syntax:  ?criteria={"names":[{"lastName":"Smith"}]}
+        cf = new SimpleCriteria.Builder()
+                .withSimpleCriteriaArray("names", "lastName", "Smith")
+                .buildCriteriaFilter();
+        System.out.println( "Example 8:  " + cf.toString() );
+
+        // Example 9:  This example generates this syntax:  ?criteria={"authors":[{"person":{"id":"11111111-1111-1111-1111-111111111111"}}]}
+        cf = new SimpleCriteria.Builder()
+                .withSimpleCriteriaObjectArray("authors")
+                .addSimpleCriteriaObject("person", "id", "11111111-1111-1111-1111-111111111111")
+                .buildCriteriaFilter();
+        System.out.println( "Example 9:  " + cf.toString() );
+
+        // Example 10:  This example generates this syntax:  ?criteria={"solicitors":[{"solicitor":{"constituent":{"person":{"id":"11111111-1111-1111-1111-111111111111"}}}}]}
+        scBuilder = new SimpleCriteria.Builder();
+        cf = scBuilder.withSimpleCriteriaObjectArray("solicitors",
+             scBuilder.withSimpleCriteriaObject("person", "id", "11111111-1111-1111-1111-111111111111")
+                      .nestCriteria("constituent")
+                      .nestCriteria("solicitor"))
+             .buildCriteriaFilter();
+        System.out.println( "Example 10: " + cf.toString() );
+
+        // Example 11:  This example generates this syntax:  ?criteria={"credentials":[{"type":"bannerId","value":"myBannerId"}]}
+        scBuilder = new SimpleCriteria.Builder();
+        cf = scBuilder.withMultiCriteriaObjectArray("credentials")
+                      .addMultiCriteriaObject(scBuilder.withMultiCriteriaObjectForArray("type", "bannerId").addSimpleCriteria("value", "myBannerId"))
+                      .buildCriteriaFilter();
+        System.out.println( "Example 11: " + cf.toString() );
+
+        // Example 12:  This example generates this syntax:  ?keywordSearch={"keywordSearch": "Culture"}
+        NamedQueryFilter namedQueryFilter = new SimpleCriteria.Builder()
+                .withNamedQuery("keywordSearch", "keywordSearch", "Culture")
+                .buildNamedQueryFilter();
+        System.out.println( "Example 12: " + namedQueryFilter.toString() );
+
+        // Example 13:  This example generates this syntax:  ?instructor={"instructor": {"id": "11111111-1111-1111-1111-111111111111"}}
+        namedQueryFilter = new SimpleCriteria.Builder()
+                .withNamedQueryObject("instructor", "instructor", "id", "11111111-1111-1111-1111-111111111111")
+                .buildNamedQueryFilter();
+        System.out.println( "Example 13: " + namedQueryFilter.toString() );
+
+        // Example 14:  This example generates this syntax:  ?advancedSearch={"keyword": "Culture", "defaultSettings": {"id": "11111111-1111-1111-1111-111111111111"}}
+        namedQueryFilter = new SimpleCriteria.Builder()
+                .withNamedQueryCombination("advancedSearch", "keyword", "Culture")
+                .addNamedQueryObject("defaultSettings", "id", "11111111-1111-1111-1111-111111111111")
+                .buildNamedQueryFilter();
+        System.out.println( "Example 14: " + namedQueryFilter.toString() );
+
+        // Example 15:  This example generates this syntax:  ?registrationStatusesByAcademicPeriod={"academicPeriod":{"id":"11111111-1111-1111-1111-111111111111"},"statuses":[{"detail":{"id":"22222222-2222-2222-2222-222222222222"}}]}
+        NamedQueryFilter nqf = new SimpleCriteria.Builder()
+                .withNamedQueryObjectArrayCombination("registrationStatusesByAcademicPeriod", "academicPeriod", "id", "11111111-1111-1111-1111-111111111111")
+                .withArrayLabel("statuses")
+                .addToNamedQueryObjectArray("detail", "id", "22222222-2222-2222-2222-222222222222")
+                .buildNamedQueryFilter();
+        System.out.println( "Example 15: " + nqf.toString() );
+
+        /**********************************************************************************************************
+         /* Examples 16 - 17 show how to build criteria filters primarily when making GET requests for BPAPIs,
+         /* as opposed to Ethos APIs.  However, the Ethos Integration SDK makes no distinction between Ethos API and
+         /* BPAPI requests.
+         /*********************************************************************************************************/
+
+        System.out.println( System.lineSeparator() + "Examples 16 - 17 are primarily used for BPAPI requests as opposed to Ethos API requests, " +
+                "though the Ethos Integration SDK makes no distinction between the type of API request." + System.lineSeparator() );
+
+        // Example 16:  This example generates this syntax:  ?criteria={"acctCode":"04","statusInd":"A"}
+        cf = new SimpleCriteria.Builder()
+                .withMultiCriteriaObject(null,"acctCode", "04", false)
+                .addSimpleCriteria("statusInd", "A")
+                .buildCriteriaFilter();
+        System.out.println( "Example 16: " + cf.toString() );
+
+        // Example 17:  This example generates this syntax:  ?statusInd=A&acctCode=04
+        FilterMap filterMap = new FilterMap.Builder()
+                .withParameterPair("acctCode", "04")
+                .withParameterPair("statusInd", "A")
+                .build();
+        System.out.println( "Example 17: " + filterMap.toString() );
     }
 
     /**
@@ -840,13 +986,13 @@ public class EthosFilterQueryClientExample {
 
 //             Now build a person comment using JsonNode with this structure.
 //            {
+//                "id": "210009506",
 //                "date": "10/02/2022T20:53:54.872Z",
 //                "contactDate": "10/02/2022",
 //                "cmttCode": "105",
-//                "id": "210009506",
+//                "origCode": "CCON",
 //                "confidentialInd": "s",
 //                "text": "testing, testing, 1234",
-//                "origCode": "CCON",
 //                "textNar": "1234, testing, testing"
 //            }
 
@@ -857,9 +1003,9 @@ public class EthosFilterQueryClientExample {
             personCommentNode.put( "date", rightNow.toString() );
             personCommentNode.put( "contactDate", rightNow.toString() );
             personCommentNode.put( "cmttCode", "105" );
+            personCommentNode.put( "origCode", "CCON" );
             personCommentNode.put( "confidentialInd", "s" );
             personCommentNode.put( "text", "Testing through BPAPI Java SDK example" );
-            personCommentNode.put( "origCode", "CCON" );
             personCommentNode.put( "textNar", "Testing through BPAPI Java SDK example" );
 
             // Make a POST request to add a new person comment using a JavaBean request body object.
@@ -869,7 +1015,8 @@ public class EthosFilterQueryClientExample {
             ethosResponse = ethosFilterQueryClient.post( resourceName, personCommentNode );
             System.out.println( "POST EthosResponse body: " + ethosResponse.getContent() );
 
-            // Change the contact date on the personCommentNode so that we can make a PUT request to update it.  Adds a day to the date.
+            // All the other properties are already in the personCommentNode JsonNode object from the POST request,
+            // so, change the contact date on the personCommentNode so that we can make a PUT request to update it.  Adds a day to the date.
             personCommentNode.put( "contactDate", rightNow.plus(1, ChronoUnit.DAYS).toString() );
             System.out.println( "Making PUT request with updated contact date: " + personCommentNode.get("contactDate") );
             ethosResponse = ethosFilterQueryClient.put( resourceName, personCommentNode );
@@ -920,14 +1067,14 @@ public class EthosFilterQueryClientExample {
             Instant now = Instant.now();
             Date today = Date.from( now );
             PersonComments100PostRequest personCommentsPostRequest = new PersonComments100PostRequest()
-                    .withCmttCode("105")
                     .withId(personId)
-                    .withConfidentialInd("s")
-                    .withOrigCode("CCON")
-                    .withText("adding a comment through Java SDK")
-                    .withTextNar("comment through Java SDK")
+                    .withDate(today)
                     .withContactDate(today)
-                    .withDate(today);
+                    .withCmttCode("105")
+                    .withOrigCode("CCON")
+                    .withConfidentialInd("s")
+                    .withText("adding a comment through Java SDK")
+                    .withTextNar("comment through Java SDK");
 
             // Reset the resource name for the resource we are POSTing and PUTting to.
             resourceName = "person-comments";
@@ -937,10 +1084,17 @@ public class EthosFilterQueryClientExample {
             System.out.println( "POST made using this URL: " + ethosResponse.getRequestedUrl() );
             System.out.println( "POST EthosResponse body: " + ethosResponse.getContent() );
 
-            // Now build a person comment PUT request to update the contact date.  Only the id and the updated field is required (in this case the contact date field).
+            // Now build a person comment PUT request to update the contact date with the property values from the PersonComments100PostRequest object.
             PersonComments100PutRequest personCommentsPutRequest = new PersonComments100PutRequest()
                     .withId(personCommentsPostRequest.getId())
-                    .withContactDate(Date.from(Instant.now().plus(1, ChronoUnit.DAYS))); // Add a day to the contact date to update it.
+                    .withDate(today)
+                    .withContactDate(Date.from(Instant.now().plus(1, ChronoUnit.DAYS))) // Add a day to the contact date to update it.
+                    .withCmttCode(personCommentsPostRequest.getCmttCode())
+                    .withOrigCode(personCommentsPostRequest.getOrigCode())
+                    .withConfidentialInd(personCommentsPostRequest.getConfidentialInd())
+                    .withText(personCommentsPostRequest.getText())
+                    .withTextNar(personCommentsPostRequest.getTextNar());
+
             // Change the contact date on the personCommentRequest so that we can make a PUT request to update it.  Adds a day to the date.
             System.out.println( "Making PUT request with updated contact date: " + personCommentsPutRequest.getContactDate() );
             ethosResponse = ethosFilterQueryClient.put( resourceName, personCommentsPutRequest );
