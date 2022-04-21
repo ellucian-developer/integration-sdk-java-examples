@@ -8,6 +8,7 @@ package com.ellucian.examples;
 
 import com.ellucian.ethos.integration.client.EthosClientBuilder;
 import com.ellucian.ethos.integration.client.EthosResponse;
+import com.ellucian.ethos.integration.client.EthosResponseConverter;
 import com.ellucian.ethos.integration.client.proxy.EthosFilterQueryClient;
 import com.ellucian.ethos.integration.client.proxy.filter.CriteriaFilter;
 import com.ellucian.ethos.integration.client.proxy.filter.FilterMap;
@@ -247,13 +248,14 @@ public class EthosFilterQueryClientExample {
         String version = "application/vnd.hedtech.integration.v12.1.0+json";
         String criteriaFilterStr = "?criteria={\"names\":[{\"firstName\":\"John\",\"lastName\":\"Smith\"}]}";
         EthosFilterQueryClient ethosFilterQueryClient = getEthosFilterQueryClient();
+        EthosResponseConverter ethosResponseConverter = new EthosResponseConverter();
         try {
             EthosResponse ethosResponse = ethosFilterQueryClient.getWithCriteriaFilter(resource, version, criteriaFilterStr);
             System.out.println( "REQUESTED URL: " + ethosResponse.getRequestedUrl() );
-            System.out.println( "Number of resources returned: " + ethosResponse.getContentAsJson().size() );
+            JsonNode responseNode = ethosResponseConverter.toJsonNode( ethosResponse );
+            System.out.println( "Number of resources returned: " + responseNode.size() );
             // Printing out the response JSON string, but the response body can be handled using the Jackson JsonNode library.
-            JsonNode jsonNode = ethosResponse.getContentAsJson();
-            System.out.println( jsonNode.toPrettyString() );
+            System.out.println( responseNode.toPrettyString() );
         }
         catch( IOException ioe ) {
             ioe.printStackTrace();
@@ -272,13 +274,14 @@ public class EthosFilterQueryClientExample {
                 .withSimpleCriteriaArray("names", "firstName", "John")
                 .buildCriteriaFilter();
         EthosFilterQueryClient ethosFilterQueryClient = getEthosFilterQueryClient();
+        EthosResponseConverter ethosResponseConverter = new EthosResponseConverter();
         try {
             EthosResponse ethosResponse = ethosFilterQueryClient.getWithCriteriaFilter( resource, criteriaFilter );
             System.out.println( "REQUESTED URL: " + ethosResponse.getRequestedUrl() );
-            System.out.println( "Number of resources returned: " + ethosResponse.getContentAsJson().size() );
+            JsonNode responseNode = ethosResponseConverter.toJsonNode( ethosResponse );
+            System.out.println( "Number of resources returned: " + responseNode.size() );
             // Printing out the response JSON string, but the response body can be handled using the Jackson JsonNode library.
-            JsonNode jsonNode = ethosResponse.getContentAsJson();
-            System.out.println( jsonNode.toPrettyString() );
+            System.out.println( responseNode.toPrettyString() );
         }
         catch( IOException ioe ) {
             ioe.printStackTrace();
@@ -328,13 +331,14 @@ public class EthosFilterQueryClientExample {
                                             .withNamedQuery( queryName, queryKey, queryValue)
                                             .buildNamedQueryFilter();
         EthosFilterQueryClient ethosFilterQueryClient = getEthosFilterQueryClient();
+        EthosResponseConverter ethosResponseConverter = new EthosResponseConverter();
         try {
             EthosResponse ethosResponse = ethosFilterQueryClient.getWithNamedQueryFilter( resource, namedQueryFilter );
             System.out.println( "REQUESTED URL: " + ethosResponse.getRequestedUrl() );
-            System.out.println( "Number of resources returned: " + ethosResponse.getContentAsJson().size() );
+            JsonNode responseNode = ethosResponseConverter.toJsonNode( ethosResponse );
+            System.out.println( "Number of resources returned: " + responseNode.size() );
             // Printing out the response JSON string, but the response body can be handled using the Jackson JsonNode library.
-            JsonNode jsonNode = ethosResponse.getContentAsJson();
-            System.out.println( jsonNode.toPrettyString() );
+            System.out.println( responseNode.toPrettyString() );
         }
         catch( IOException ioe ) {
             ioe.printStackTrace();
@@ -382,14 +386,15 @@ public class EthosFilterQueryClientExample {
         String criteriaKey = "firstName";
         String criteriaValue = "John";
         EthosFilterQueryClient ethosFilterQueryClient = getEthosFilterQueryClient();
+        EthosResponseConverter ethosResponseConverter = new EthosResponseConverter();
         try {
             // Just pass in the criteria label, key, and value using this method...the SDK does the rest of the work to make the request.
             EthosResponse ethosResponse = ethosFilterQueryClient.getWithSimpleCriteriaArrayValues( resource, criteriaLabel, criteriaKey, criteriaValue );
             System.out.println( "REQUESTED URL: " + ethosResponse.getRequestedUrl() );
-            System.out.println( "Number of resources returned: " + ethosResponse.getContentAsJson().size() );
+            JsonNode responseNode = ethosResponseConverter.toJsonNode( ethosResponse );
+            System.out.println( "Number of resources returned: " + responseNode.size() );
             // Printing out the response JSON string, but the response body can be handled using the Jackson JsonNode library.
-            JsonNode jsonNode = ethosResponse.getContentAsJson();
-            System.out.println( jsonNode.toPrettyString() );
+            System.out.println( responseNode.toPrettyString() );
         }
         catch( IOException ioe ) {
             ioe.printStackTrace();
@@ -411,7 +416,7 @@ public class EthosFilterQueryClientExample {
             // Just pass in the criteria label, key, and value using this method...the SDK does the rest of the work to make the request.
             // Specify the Persons.class JavaBean type for easier response body handling.
             EthosResponse<List<Persons>> ethosResponse = ethosFilterQueryClient.getWithSimpleCriteriaArrayValues( resource, criteriaLabel, criteriaKey, criteriaValue, Persons.class );
-            // Get the response body content from the ethosResponse as a list of Sections JavaBeans.
+            // Get the response body content from the ethosResponse as a list of Persons JavaBeans.
             List<Persons> personsList = ethosResponse.getContentAsType();
             System.out.println( "REQUESTED URL: " + ethosResponse.getRequestedUrl() );
             System.out.println( "Number of resources returned: " + personsList.size() );
@@ -435,6 +440,7 @@ public class EthosFilterQueryClientExample {
         String filterKey = "firstName";
         String filterValue = "John";
         EthosFilterQueryClient ethosFilterQueryClient = getEthosFilterQueryClient();
+        EthosResponseConverter ethosResponseConverter = new EthosResponseConverter();
         try {
             FilterMap filterMap = new FilterMap.Builder()
                                       .withParameterPair(filterKey, filterValue)
@@ -442,10 +448,10 @@ public class EthosFilterQueryClientExample {
                                       .build();
             EthosResponse ethosResponse = ethosFilterQueryClient.getWithFilterMap( resource, version, filterMap );
             System.out.println( "REQUESTED URL: " + ethosResponse.getRequestedUrl() );
-            System.out.println( "Number of resources returned: " + ethosResponse.getContentAsJson().size() );
+            JsonNode responseNode = ethosResponseConverter.toJsonNode( ethosResponse );
+            System.out.println( "Number of resources returned: " + responseNode.size() );
             // Printing out the response JSON string, but the response body can be handled using the Jackson JsonNode library.
-            JsonNode jsonNode = ethosResponse.getContentAsJson();
-            System.out.println( jsonNode.toPrettyString() );
+            System.out.println( responseNode.toPrettyString() );
         }
         catch( IOException ioe ) {
             ioe.printStackTrace();
@@ -470,7 +476,7 @@ public class EthosFilterQueryClientExample {
                     .build();
             // Specify the v6 in this example of the Persons.class JavaBean type from the version header value listed above for easy response body handling.
             EthosResponse<List<com.ellucian.generated.eedm.persons.v6_0.Persons>> ethosResponse = ethosFilterQueryClient.getWithFilterMap( resource, version, filterMap, com.ellucian.generated.eedm.persons.v6_0.Persons.class );
-            // Get the response body content from the ethosResponse as a list of Sections JavaBeans.
+            // Get the response body content from the ethosResponse as a list of Persons JavaBeans.
             List<com.ellucian.generated.eedm.persons.v6_0.Persons> personsList = ethosResponse.getContentAsType();
             System.out.println( "REQUESTED URL: " + ethosResponse.getRequestedUrl() );
             System.out.println( "Number of resources returned: " + personsList.size() );
@@ -500,6 +506,7 @@ public class EthosFilterQueryClientExample {
         String criteriaValue = "John";
         int pageSize = 50;
         EthosFilterQueryClient ethosFilterQueryClient = getEthosFilterQueryClient();
+        EthosResponseConverter ethosResponseConverter = new EthosResponseConverter();
         try {
             CriteriaFilter criteriaFilter = new SimpleCriteria.Builder()
                                             .withSimpleCriteriaArray(criteriaLabel, criteriaKey, criteriaValue)
@@ -509,9 +516,9 @@ public class EthosFilterQueryClientExample {
             for( EthosResponse ethosResponse : ethosResponseList ) {
                 System.out.println( "REQUESTED URL: " + ethosResponse.getRequestedUrl() );
                 // Printing out the response JSON string, but the response body can be handled using the Jackson JsonNode library.
-                JsonNode jsonNode = ethosResponse.getContentAsJson();
-                System.out.println( "PAGE SIZE: " + jsonNode.size() );
-                System.out.println( jsonNode.toString() );
+                JsonNode responseNode = ethosResponseConverter.toJsonNode( ethosResponse );
+                System.out.println( "PAGE SIZE: " + responseNode.size() );
+                System.out.println( responseNode.toString() );
             }
         }
         catch( IOException ioe ) {
@@ -573,6 +580,7 @@ public class EthosFilterQueryClientExample {
         String criteriaValue = "John";
         int pageSize = 50;
         EthosFilterQueryClient ethosFilterQueryClient = getEthosFilterQueryClient();
+        EthosResponseConverter ethosResponseConverter = new EthosResponseConverter();
         try {
             CriteriaFilter criteriaFilter = new SimpleCriteria.Builder()
                                             .withSimpleCriteriaArray(criteriaLabel, criteriaKey, criteriaValue)
@@ -590,9 +598,9 @@ public class EthosFilterQueryClientExample {
             for( EthosResponse ethosResponse : ethosResponseList ) {
                 System.out.println( "REQUESTED URL: " + ethosResponse.getRequestedUrl() );
                 // Printing out the response JSON string, but the response body can be handled using the Jackson JsonNode library.
-                JsonNode jsonNode = ethosResponse.getContentAsJson();
-                System.out.println( "PAGE SIZE: " + jsonNode.size() );
-                System.out.println( jsonNode.toString() );
+                JsonNode responseNode = ethosResponseConverter.toJsonNode( ethosResponse );
+                System.out.println( "PAGE SIZE: " + responseNode.size() );
+                System.out.println( responseNode.toString() );
             }
         }
         catch( IOException ioe ) {
@@ -661,6 +669,7 @@ public class EthosFilterQueryClientExample {
         String queryValue = "Culture";
         int pageSize = 50;
         EthosFilterQueryClient ethosFilterQueryClient = getEthosFilterQueryClient();
+        EthosResponseConverter ethosResponseConverter = new EthosResponseConverter();
         try {
             NamedQueryFilter namedQueryFilter = new SimpleCriteria.Builder()
                                                 .withNamedQuery( queryName, queryKey, queryValue)
@@ -678,9 +687,9 @@ public class EthosFilterQueryClientExample {
             for( EthosResponse ethosResponse : ethosResponseList ) {
                 System.out.println( "REQUESTED URL: " + ethosResponse.getRequestedUrl() );
                 // Printing out the response JSON string, but the response body can be handled using the Jackson JsonNode library.
-                JsonNode jsonNode = ethosResponse.getContentAsJson();
-                System.out.println( "PAGE SIZE: " + jsonNode.size() );
-                System.out.println( jsonNode.toString() );
+                JsonNode responseNode = ethosResponseConverter.toJsonNode( ethosResponse );
+                System.out.println( "PAGE SIZE: " + responseNode.size() );
+                System.out.println( responseNode.toString() );
             }
         }
         catch( IOException ioe ) {
@@ -748,6 +757,7 @@ public class EthosFilterQueryClientExample {
         String filterMapValue = "John";
         int pageSize = 50;
         EthosFilterQueryClient ethosFilterQueryClient = getEthosFilterQueryClient();
+        EthosResponseConverter ethosResponseConverter = new EthosResponseConverter();
         try {
             FilterMap filterMap = new FilterMap.Builder()
                                       .withParameterPair(filterMapKey, filterMapValue)
@@ -757,9 +767,9 @@ public class EthosFilterQueryClientExample {
             for( EthosResponse ethosResponse : ethosResponseList ) {
                 System.out.println( "REQUESTED URL: " + ethosResponse.getRequestedUrl() );
                 // Printing out the response JSON string, but the response body can be handled using the Jackson JsonNode library.
-                JsonNode jsonNode = ethosResponse.getContentAsJson();
-                System.out.println( "PAGE SIZE: " + jsonNode.size() );
-                System.out.println( jsonNode.toString() );
+                JsonNode responseNode = ethosResponseConverter.toJsonNode( ethosResponse );
+                System.out.println( "PAGE SIZE: " + responseNode.size() );
+                System.out.println( responseNode.toString() );
             }
         }
         catch( IOException ioe ) {
@@ -821,6 +831,7 @@ public class EthosFilterQueryClientExample {
         String filterMapValue = "John";
         int pageSize = 50;
         EthosFilterQueryClient ethosFilterQueryClient = getEthosFilterQueryClient();
+        EthosResponseConverter ethosResponseConverter = new EthosResponseConverter();
         try {
             FilterMap filterMap = new FilterMap.Builder()
                     .withParameterPair(filterMapKey, filterMapValue)
@@ -838,9 +849,9 @@ public class EthosFilterQueryClientExample {
             for( EthosResponse ethosResponse : ethosResponseList ) {
                 System.out.println( "REQUESTED URL: " + ethosResponse.getRequestedUrl() );
                 // Printing out the response JSON string, but the response body can be handled using the Jackson JsonNode library.
-                JsonNode jsonNode = ethosResponse.getContentAsJson();
-                System.out.println( "PAGE SIZE: " + jsonNode.size() );
-                System.out.println( jsonNode.toString() );
+                JsonNode responseNode = ethosResponseConverter.toJsonNode( ethosResponse );
+                System.out.println( "PAGE SIZE: " + responseNode.size() );
+                System.out.println( responseNode.toString() );
             }
         }
         catch( IOException ioe ) {
@@ -905,6 +916,7 @@ public class EthosFilterQueryClientExample {
         String resourceName = "account-codes";
         String version = "application/json";
         EthosFilterQueryClient ethosFilterQueryClient = getEthosFilterQueryClient();
+        EthosResponseConverter ethosResponseConverter = new EthosResponseConverter();
         try {
             CriteriaFilter cf = new SimpleCriteria.Builder()
                                 .withMultiCriteriaObject(null,"acctCode", "04", false)
@@ -913,9 +925,9 @@ public class EthosFilterQueryClientExample {
             EthosResponse ethosResponse = ethosFilterQueryClient.getWithCriteriaFilter( resourceName, version, cf );
             System.out.println( "REQUEST URL: " + ethosResponse.getRequestedUrl() );
             // Printing out the response JSON string, but the response body can be handled using the Jackson JsonNode library.
-            JsonNode jsonNode = ethosResponse.getContentAsJson();
-            System.out.println( "PAGE SIZE: " + jsonNode.size() );
-            System.out.println( jsonNode.toPrettyString() );
+            JsonNode responseNode = ethosResponseConverter.toJsonNode( ethosResponse );
+            System.out.println( "PAGE SIZE: " + responseNode.size() );
+            System.out.println( responseNode.toPrettyString() );
         }
         catch( IOException ioe ) {
             ioe.printStackTrace();
@@ -966,6 +978,7 @@ public class EthosFilterQueryClientExample {
     public void applyPersonCommentsUsingJsonNodes() {
         // Use an EthosFilterQueryClient since we need to make a filter GET request.  Can also use it to make POST and PUT requests since it extends EthosProxyClient.
         EthosFilterQueryClient ethosFilterQueryClient = getEthosFilterQueryClient();
+        EthosResponseConverter ethosResponseConverter = new EthosResponseConverter();
         try {
             System.out.println("\n\n--- Running apply person comments JsonNodes example... ---");
             System.out.println( "Finding a person record to use..." );
@@ -979,7 +992,7 @@ public class EthosFilterQueryClientExample {
             // Just pull the first response from the list...
             EthosResponse ethosResponse = ethosResponseList.get( 0 );
             // Get the JsonNode from the response...
-            JsonNode personSearchNode = ethosResponse.getContentAsJson();
+            JsonNode personSearchNode = ethosResponseConverter.toJsonNode( ethosResponse );
             // Now get the ID from the first personSearch in the node list.
             String personId = personSearchNode.elements().next().get("id").asText();
             System.out.println( "Found person with ID: " + personId );

@@ -1185,14 +1185,15 @@ public class EthosProxyClientExample {
      */
     public void doPostPutUsingJsonNodeExample() {
         EthosProxyClient ethosProxyClient = getEthosProxyClient();
+        EthosResponseConverter ethosResponseConverter = new EthosResponseConverter();
         try {
             System.out.println("******* applyPersonHoldUsingJsonNodes() *******");
             System.out.println( "Finding a person record to use..." );
             // Get a single person record.
-            List<EthosResponse> responses = ethosProxyClient.getRows("persons", 1);
+            List<JsonNode> responses = ethosProxyClient.getRowsAsJsonNodes( "persons", 1 );
             // Get the response body content as a JsonNode.
-            JsonNode personNode = responses.get(0).getContentAsJson();
-            String personId = personNode.elements().next().get("id").asText();
+            JsonNode personNode = responses.get( 0 );
+            String personId = personNode.get("id").asText();
 
             // Build a person-holds resource using JsonNodes.
             Instant rightNow = Instant.now().truncatedTo(ChronoUnit.SECONDS);
@@ -1210,7 +1211,7 @@ public class EthosProxyClientExample {
             System.out.println(response.getContent());
 
             // Get the 'id' of the new record
-            String newId = response.getContentAsJson().get("id").asText();
+            String newId = ethosResponseConverter.toJsonNode(response).get("id").asText();
 
             // Change the date on the person-holds record and send a PUT request to update the record.
             personHoldNode.remove("id");
@@ -1252,13 +1253,14 @@ public class EthosProxyClientExample {
      */
     public void doPostPutUsingJavaBeansExample() {
         EthosProxyClient ethosProxyClient = getEthosProxyClient();
+        EthosResponseConverter ethosResponseConverter = new EthosResponseConverter();
         try {
             System.out.println("\n\n--- Running apply person holds example... ---");
             System.out.println( "Finding a person record to use..." );
             // Get a single person record.
-            List<EthosResponse> responses = ethosProxyClient.getRows("persons", 1);
-            JsonNode personNode = responses.get(0).getContentAsJson();
-            String personId = personNode.elements().next().get("id").asText();
+            List<JsonNode> responses = ethosProxyClient.getRowsAsJsonNodes( "persons", 1 );
+            JsonNode personNode = responses.get( 0 );
+            String personId = personNode.get("id").asText();
             System.out.println(String.format("Found a person ID: %s", personId));
 
             // Build a person-holds resource using JavaBean objects.
@@ -1282,7 +1284,7 @@ public class EthosProxyClientExample {
             System.out.println(response.getContent());
 
             // Get the 'id' of the newly added record.
-            String newId = response.getContentAsJson().get("id").asText();
+            String newId = ethosResponseConverter.toJsonNode(response).get("id").asText();
 
             // Change the date on the person-holds record and send a PUT request to update the record.
             personHolds.setId(null);
