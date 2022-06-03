@@ -16,13 +16,13 @@
     <dependencies>
         <dependency>
             <groupId>com.ellucian</groupId>
-            <artifactId>devexp-eijsdk-objects-BPAPIBAN</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <artifactId>integration-sdk-java-objects-BPAPIBAN</artifactId>
+            <version>0.0.1</version>
         </dependency>
         <dependency>
             <groupId>com.ellucian</groupId>
-            <artifactId>devexp-eijsdk-objects-EEDM</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <artifactId>integration-sdk-java-objects-EEDM</artifactId>
+            <version>0.0.1</version>
         </dependency>
         <dependency>
             <groupId>com.ellucian.ethos.integration.sdk</groupId>
