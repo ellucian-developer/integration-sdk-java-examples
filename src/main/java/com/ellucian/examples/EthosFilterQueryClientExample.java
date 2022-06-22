@@ -265,7 +265,7 @@ public class EthosFilterQueryClientExample {
             JsonNode responseNode = ethosResponseConverter.toJsonNode( ethosResponse );
             System.out.println( "Number of resources returned: " + responseNode.size() );
             // Printing out the response JSON string, but the response body can be handled using the Jackson JsonNode library.
-            System.out.println( responseNode.toPrettyString() );
+            System.out.println( responseNode.toString() );
         }
         catch( IOException ioe ) {
             ioe.printStackTrace();
@@ -291,7 +291,7 @@ public class EthosFilterQueryClientExample {
             JsonNode responseNode = ethosResponseConverter.toJsonNode( ethosResponse );
             System.out.println( "Number of resources returned: " + responseNode.size() );
             // Printing out the response JSON string, but the response body can be handled using the Jackson JsonNode library.
-            System.out.println( responseNode.toPrettyString() );
+            System.out.println( responseNode.toString() );
         }
         catch( IOException ioe ) {
             ioe.printStackTrace();
@@ -348,7 +348,7 @@ public class EthosFilterQueryClientExample {
             JsonNode responseNode = ethosResponseConverter.toJsonNode( ethosResponse );
             System.out.println( "Number of resources returned: " + responseNode.size() );
             // Printing out the response JSON string, but the response body can be handled using the Jackson JsonNode library.
-            System.out.println( responseNode.toPrettyString() );
+            System.out.println( responseNode.toString() );
         }
         catch( IOException ioe ) {
             ioe.printStackTrace();
@@ -404,7 +404,7 @@ public class EthosFilterQueryClientExample {
             JsonNode responseNode = ethosResponseConverter.toJsonNode( ethosResponse );
             System.out.println( "Number of resources returned: " + responseNode.size() );
             // Printing out the response JSON string, but the response body can be handled using the Jackson JsonNode library.
-            System.out.println( responseNode.toPrettyString() );
+            System.out.println( responseNode.toString() );
         }
         catch( IOException ioe ) {
             ioe.printStackTrace();
@@ -461,7 +461,7 @@ public class EthosFilterQueryClientExample {
             JsonNode responseNode = ethosResponseConverter.toJsonNode( ethosResponse );
             System.out.println( "Number of resources returned: " + responseNode.size() );
             // Printing out the response JSON string, but the response body can be handled using the Jackson JsonNode library.
-            System.out.println( responseNode.toPrettyString() );
+            System.out.println( responseNode.toString() );
         }
         catch( IOException ioe ) {
             ioe.printStackTrace();
@@ -525,7 +525,7 @@ public class EthosFilterQueryClientExample {
             JsonNode responseNode = ethosResponseConverter.toJsonNode( ethosResponse );
             System.out.println( "Number of resources returned: " + responseNode.size() );
             // Printing out the response JSON string, but the response body can be handled using the Jackson JsonNode library.
-            System.out.println( responseNode.toPrettyString() );
+            System.out.println( responseNode.toString() );
         }
         catch( IOException ioe ) {
             ioe.printStackTrace();
@@ -557,7 +557,7 @@ public class EthosFilterQueryClientExample {
             JsonNode responseNode = ethosResponseConverter.toJsonNode( ethosResponse );
             System.out.println( "Number of resources returned: " + responseNode.size() );
             // Printing out the response JSON string, but the response body can be handled using the Jackson JsonNode library.
-            System.out.println( responseNode.toPrettyString() );
+            System.out.println( responseNode.toString() );
         }
         catch( IOException ioe ) {
             ioe.printStackTrace();
@@ -1068,7 +1068,7 @@ public class EthosFilterQueryClientExample {
             // Printing out the response JSON string, but the response body can be handled using the Jackson JsonNode library.
             JsonNode responseNode = ethosResponseConverter.toJsonNode( ethosResponse );
             System.out.println( "PAGE SIZE: " + responseNode.size() );
-            System.out.println( responseNode.toPrettyString() );
+            System.out.println( responseNode.toString() );
         }
         catch( IOException ioe ) {
             ioe.printStackTrace();
