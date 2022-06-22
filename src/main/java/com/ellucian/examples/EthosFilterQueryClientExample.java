@@ -10,6 +10,7 @@ import com.ellucian.ethos.integration.client.EthosClientBuilder;
 import com.ellucian.ethos.integration.client.EthosResponse;
 import com.ellucian.ethos.integration.client.EthosResponseConverter;
 import com.ellucian.ethos.integration.client.proxy.EthosFilterQueryClient;
+import com.ellucian.ethos.integration.client.proxy.EthosProxyClient;
 import com.ellucian.ethos.integration.client.proxy.filter.CriteriaFilter;
 import com.ellucian.ethos.integration.client.proxy.filter.FilterMap;
 import com.ellucian.ethos.integration.client.proxy.filter.NamedQueryFilter;
@@ -18,15 +19,19 @@ import com.ellucian.generated.bpapi.ban.account_codes.v1_0_0.AccountCodes100GetR
 import com.ellucian.generated.bpapi.ban.person_comments.v1_0_0.PersonComments100PostRequest;
 import com.ellucian.generated.bpapi.ban.person_comments.v1_0_0.PersonComments100PutRequest;
 import com.ellucian.generated.bpapi.ban.person_search.v1_0_0.PersonSearch100GetResponse;
+import com.ellucian.generated.bpapi.ban.term_codes.v1_0_0.TermCodes100QapiPost;
+import com.ellucian.generated.eedm.persons.v12_4_0.Name;
 import com.ellucian.generated.eedm.persons.v12_4_0.Persons;
 import com.ellucian.generated.eedm.sections.v16_1_0.Sections;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.io.IOException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -66,6 +71,8 @@ public class EthosFilterQueryClientExample {
         ethosFilterQueryClientExample.getWithSimpleCriteriaArrayValuesAsJavaBeans();
         ethosFilterQueryClientExample.getUsingFilterMap();
         ethosFilterQueryClientExample.getUsingFilterMapAsJavaBeans();
+        ethosFilterQueryClientExample.getUsingQAPIJsonNode();
+        ethosFilterQueryClientExample.getUsingQAPIJavaBean();
         ethosFilterQueryClientExample.getPagesUsingCriteriaFilter();
         ethosFilterQueryClientExample.getPagesUsingCriteriaFilterAsJavaBeans();
         ethosFilterQueryClientExample.getPagesFromOffsetUsingCriteriaFilter();
@@ -76,10 +83,13 @@ public class EthosFilterQueryClientExample {
         ethosFilterQueryClientExample.getPagesUsingFilterMapValuesAsJavaBeans();
         ethosFilterQueryClientExample.getPagesFromOffsetUsingFilterMapValues();
         ethosFilterQueryClientExample.getPagesFromOffsetUsingFilterMapValuesAsJavaBeans();
+        ethosFilterQueryClientExample.getPagesUsingQAPIWithJsonNode();
+        ethosFilterQueryClientExample.getPagesUsingQAPIWithJavaBeans();
         ethosFilterQueryClientExample.getAccountCodesWithCriteriaFilter();
         ethosFilterQueryClientExample.getAccountCodesWithCriteriaFilterAsJavaBeans();
         ethosFilterQueryClientExample.applyPersonCommentsUsingJsonNodes();
         ethosFilterQueryClientExample.applyPersonCommentsUsingJavaBeans();
+        ethosFilterQueryClientExample.getTotalCountQAPIUsingJavaBeans();
     }
 
     /**
@@ -484,6 +494,70 @@ public class EthosFilterQueryClientExample {
                 // We can use the getter methods on the persons object for easier property access, but just print out toString() here.
                 System.out.println( "PERSON: " + persons.toString() );
             }
+        }
+        catch( IOException ioe ) {
+            ioe.printStackTrace();
+        }
+    }
+
+    /**
+     * This example shows how to make a QAPI filter request using a JsonNode QAPI request body.
+     * QAPI provides a way to filter by POST request filtering on the request body rather than URL params.
+     */
+    public void getUsingQAPIJsonNode() {
+        System.out.println( "******* getUsingQAPIJsonNode() using QAPI *******" );
+        String resource = "persons";
+        EthosFilterQueryClient ethosFilterQueryClient = getEthosFilterQueryClient();
+        EthosResponseConverter ethosResponseConverter = new EthosResponseConverter();
+        try {
+            // Use JsonNodes to build the QAPI request body.
+            ObjectNode innerObjectNode = JsonNodeFactory.instance.objectNode();
+            innerObjectNode.put("firstName", "John" );
+            innerObjectNode.put( "lastName", "Smith" );
+            ArrayNode arrayNode = JsonNodeFactory.instance.arrayNode();
+            arrayNode.add( innerObjectNode );
+            ObjectNode outerObjectNode = JsonNodeFactory.instance.objectNode();
+            outerObjectNode.set( "names", arrayNode );
+            System.out.println( "QAPI REQUEST:\n" + outerObjectNode.toPrettyString() );
+            // Make the QAPI request using the ethosFilterQueryClient.
+            EthosResponse ethosResponse = ethosFilterQueryClient.getWithQAPI( resource, outerObjectNode );
+            System.out.println( "REQUESTED URL: " + ethosResponse.getRequestedUrl() );
+            JsonNode responseNode = ethosResponseConverter.toJsonNode( ethosResponse );
+            System.out.println( "Number of resources returned: " + responseNode.size() );
+            // Printing out the response JSON string, but the response body can be handled using the Jackson JsonNode library.
+            System.out.println( responseNode.toPrettyString() );
+        }
+        catch( IOException ioe ) {
+            ioe.printStackTrace();
+        }
+    }
+
+    /**
+     * This example shows how to make a QAPI filter request using a generic type object QAPI request body.
+     * Generic type objects are available in the EISDK object library.
+     * QAPI provides a way to filter by POST request filtering on the request body rather than URL params.
+     */
+    public void getUsingQAPIJavaBean() {
+        System.out.println( "******* getUsingQAPIJavaBean() using QAPI *******" );
+        String resource = "persons";
+        EthosFilterQueryClient ethosFilterQueryClient = getEthosFilterQueryClient();
+        EthosResponseConverter ethosResponseConverter = new EthosResponseConverter();
+        try {
+            // Build the QAPI request body using generic type objects (JavaBeans).
+            Persons persons = new Persons();
+            Name name = new Name();
+            name.setFirstName( "John" );
+            name.setLastName( "Smith" );
+            List<Name> nameList = new ArrayList<>();
+            nameList.add( name );
+            persons.setNames( nameList );
+            // Make the QAPI request through the ethosFilterQueryClient.
+            EthosResponse ethosResponse = ethosFilterQueryClient.getWithQAPI( resource, persons );
+            System.out.println( "REQUESTED URL: " + ethosResponse.getRequestedUrl() );
+            JsonNode responseNode = ethosResponseConverter.toJsonNode( ethosResponse );
+            System.out.println( "Number of resources returned: " + responseNode.size() );
+            // Printing out the response JSON string, but the response body can be handled using the Jackson JsonNode library.
+            System.out.println( responseNode.toPrettyString() );
         }
         catch( IOException ioe ) {
             ioe.printStackTrace();
@@ -907,6 +981,73 @@ public class EthosFilterQueryClientExample {
     }
 
     /**
+     * This example shows how to make a QAPI filter request using a JsonNode request body with default pagination.
+     * Pagination occurs from the 0 index offset based on how much data is returned, calculating the pageSize to be the length
+     * of the response.
+     * QAPI provides a way to filter by POST request filtering on the request body rather than URL params.
+     */
+    public void getPagesUsingQAPIWithJsonNode() {
+        System.out.println( "******* getPagesUsingQAPIWithJsonNode() *******" );
+        String resource = "term-codes";
+        // Build the QAPI request body using JsonNode.
+        ObjectNode objectNode = JsonNodeFactory.instance.objectNode();
+        objectNode.put( "acyrCode", "2021" );
+        try {
+            // Make the QAPI request using the ethosFilterQueryClient.
+            EthosFilterQueryClient ethosFilterQueryClient = getEthosFilterQueryClient();
+            EthosResponseConverter ethosResponseConverter = new EthosResponseConverter();
+            List<EthosResponse> ethosResponseList = ethosFilterQueryClient.getPagesWithQAPI( resource, objectNode );
+            EthosResponse firstResponse = ethosResponseList.get( 0 );
+            System.out.println(String.format("TOTAL COUNT: %s", firstResponse.getHeader( EthosProxyClient.HDR_X_TOTAL_COUNT)) );
+            System.out.println( "QAPI REQUEST BODY FILTER:\n " + objectNode.toPrettyString() );
+            System.out.println( "NUM PAGES RETURNED: " + ethosResponseList.size() );
+            for( int i = 0; i < ethosResponseList.size(); i++ ) {
+                EthosResponse ethosResponse = ethosResponseList.get( i );
+                JsonNode responseNode = ethosResponseConverter.toJsonNode( ethosResponse );
+                System.out.println( "PAGE " + (i+1) + " SIZE: " + responseNode.size() );
+            }
+        }
+        catch( IOException ioe ) {
+            ioe.printStackTrace();
+        }
+    }
+
+    /**
+     * This example shows how to make a QAPI filter request using a generic type object request body with specified pagination.
+     * Pagination occurs using the offset and pageSize specified, depending on whether enough data is returned to enable pagination.
+     * QAPI provides a way to filter by POST request filtering on the request body rather than URL params.
+     */
+    public void getPagesUsingQAPIWithJavaBeans() {
+        System.out.println( "******* getPagesUsingQAPIWithJavaBeans() *******" );
+        String resource = "term-codes";
+        String version = "application/vnd.hedtech.integration.v1.0.0+json";
+        int offset = 2;
+        int pageSize = 20;
+        // Build the QAPI request body using a generic type object JavaBean.
+        TermCodes100QapiPost termCodes100QapiPost = new TermCodes100QapiPost();
+        termCodes100QapiPost.setAcyrCode( "2021" );
+        try {
+            // Make the QAPI request using the ethosFilterQueryClient.
+            EthosFilterQueryClient ethosFilterQueryClient = getEthosFilterQueryClient();
+            EthosResponseConverter ethosResponseConverter = new EthosResponseConverter();
+            List<EthosResponse> ethosResponseList = ethosFilterQueryClient.getPagesFromOffsetWithQAPI( resource, version, termCodes100QapiPost, pageSize, offset );
+            EthosResponse firstResponse = ethosResponseList.get( 0 );
+            System.out.println(String.format("TOTAL COUNT: %s", firstResponse.getHeader( EthosProxyClient.HDR_X_TOTAL_COUNT)) );
+            System.out.println( "QAPI REQUEST BODY FILTER: \n" + termCodes100QapiPost.toString() );
+            System.out.println( "NUM PAGES RETURNED: " + ethosResponseList.size() );
+            for( int i = 0; i < ethosResponseList.size(); i++ ) {
+                EthosResponse ethosResponse = ethosResponseList.get( i );
+                JsonNode responseNode = ethosResponseConverter.toJsonNode( ethosResponse );
+                System.out.println( "PAGE " + (i+1) + " SIZE: " + responseNode.size() );
+                System.out.println( "REQUESTED URL: " + ethosResponse.getRequestedUrl() );
+            }
+        }
+        catch( IOException ioe ) {
+            ioe.printStackTrace();
+        }
+    }
+
+    /**
      * This is an example of using a criteria filter request with multiple criteria in
      * a MultiCriteriaObject.  This criteria filter structure is only used with (Banner) business API requests,
      * and not Ethos (EEDM) API requests.
@@ -1119,5 +1260,22 @@ public class EthosFilterQueryClientExample {
         }
     }
 
+    public void getTotalCountQAPIUsingJavaBeans() {
+        System.out.println( "******* getTotalCountQAPIUsingJavaBeans() *******" );
+        String resourceName = "term-codes";
+        // Build the QAPI request body using a generic type object JavaBean.
+        TermCodes100QapiPost termCodes100QapiPost = new TermCodes100QapiPost();
+        termCodes100QapiPost.setAcyrCode( "2021" );
+        try {
+            EthosFilterQueryClient ethosFilterQueryClient = getEthosFilterQueryClient();
+            // Make the call to get the total count using the ethosFilterQueryClient.
+            int totalCount = ethosFilterQueryClient.getTotalCount( resourceName, termCodes100QapiPost );
+            System.out.println( "TOTAL COUNT FOR RESOURCE: " + resourceName + ", IS: " + totalCount );
+        }
+        catch( IOException ioe ) {
+            ioe.printStackTrace();
+        }
+
+    }
 
 }
