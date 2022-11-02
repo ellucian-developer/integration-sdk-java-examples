@@ -27,7 +27,7 @@
         <dependency>
             <groupId>com.ellucian.ethos.integration.sdk</groupId>
             <artifactId>integration-sdk-java</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.1</version>
         </dependency>
 
     </dependencies>
